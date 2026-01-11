@@ -65,22 +65,20 @@ export default function FoundBike() {
                     </section>
 
                     <section style={{ marginBottom: '32px' }}>
-                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px' }}>Löytöpaikka</h2>
-                        <div style={{
-                            height: '200px',
-                            backgroundColor: '#eee',
-                            borderRadius: '16px',
-                            marginBottom: '12px',
-                            backgroundImage: 'url("https://api.mapbox.com/styles/v1/mapbox/light-v10/static/24.9384,60.1699,13,0/600x200?access_token=pk.eyJ1IjoiYm90IiwiYSI6ImNrN")',
-                            backgroundSize: 'cover',
-                            position: 'relative',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <MapPin size={32} color="var(--primary-dark)" fill="var(--primary)" />
+                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <MapPin size={20} /> Löytöpaikka
+                        </h2>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                OSOITE TAI ALUE
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="esim. Rautatientori, Helsinki"
+                                style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }}
+                            />
+                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>Kirjoita mahdollisimman tarkka osoite tai paikan nimi, josta pyörä löytyi.</p>
                         </div>
-                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>Merkitse paikka, josta löysit pyörän.</p>
                     </section>
 
                     <section style={{ marginBottom: '32px' }}>
