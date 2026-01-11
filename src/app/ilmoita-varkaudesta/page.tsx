@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Info, MapPin, Camera, Send, ShieldAlert, AlertCircle } from "lucide-react";
+import { ArrowLeft, Info, MapPin, Camera, Send, ShieldAlert, AlertCircle, X } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -16,9 +16,12 @@ export default function ReportStolen() {
         type: "Maastopyörä",
         location: ""
     });
+    const [images, setImages] = useState<string[]>([]);
+    const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<any>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -37,6 +40,47 @@ export default function ReportStolen() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        setUploading(true);
+        setError(null);
+
+        const newImages = [...images];
+
+        for (let i = 0; i < files.length; i++) {
+            if (newImages.length >= 4) break;
+
+            const file = files[i];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { error: uploadError, data } = await supabase.storage
+                .from('bike-images')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                setError("Kuvan lataus epäonnistui: " + uploadError.message);
+                continue;
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('bike-images')
+                .getPublicUrl(filePath);
+
+            newImages.push(publicUrl);
+        }
+
+        setImages(newImages);
+        setUploading(false);
+    };
+
+    const removeImage = (index: number) => {
+        setImages(images.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
@@ -49,6 +93,8 @@ export default function ReportStolen() {
                 ...formData,
                 user_id: user.id,
                 status: 'varastettu',
+                image_url: images[0] || null, // Primary image
+                images: images, // Array of all images
                 created_at: new Date().toISOString()
             }
         ]);
@@ -195,17 +241,45 @@ export default function ReportStolen() {
                             <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--primary-dark)' }}>Max 4</span>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <div style={{ width: '100px', height: '100px', border: '2px dashed var(--border)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', gap: '4px' }}>
-                                <Camera size={24} />
-                                <span style={{ fontSize: '10px', fontWeight: 700 }}>LISÄÄ</span>
-                            </div>
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                            {images.map((url, index) => (
+                                <div key={index} style={{ position: 'relative', width: '100px', height: '100px' }}>
+                                    <img src={url} alt="Bicycle" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(index)}
+                                        style={{ position: 'absolute', top: '-8px', right: '-8px', backgroundColor: '#ff1744', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            ))}
+
+                            {images.length < 4 && (
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={uploading}
+                                    style={{ width: '100px', height: '100px', border: '2px dashed var(--border)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', gap: '4px', backgroundColor: 'transparent', cursor: 'pointer' }}
+                                >
+                                    <Camera size={24} />
+                                    <span style={{ fontSize: '10px', fontWeight: 700 }}>{uploading ? "LATAA..." : "LISÄÄ"}</span>
+                                </button>
+                            )}
                         </div>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleImageChange}
+                            accept="image/*"
+                            multiple
+                            style={{ display: 'none' }}
+                        />
                     </section>
 
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || uploading}
                         className="primary-button"
                         style={{
                             width: '100%',
@@ -214,7 +288,7 @@ export default function ReportStolen() {
                             justifyContent: 'center',
                             fontSize: '18px',
                             marginBottom: '40px',
-                            opacity: loading ? 0.7 : 1
+                            opacity: (loading || uploading) ? 0.7 : 1
                         }}
                     >
                         {loading ? "Lähetetään..." : "Lähetä ilmoitus"} <Send size={20} />
