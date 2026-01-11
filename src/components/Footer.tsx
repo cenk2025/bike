@@ -48,7 +48,7 @@ export default function Footer() {
 
                 <div style={{ borderTop: '1px solid #333', paddingTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
                     <p style={{ color: '#666', fontSize: '14px' }}>
-                        © 2026 CycleFound Global. Kaikki oikeudet pidätetään.
+                        © 2026 <a href="https://voon.fi" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontWeight: 600 }}>VoonIQ ürünüdür.</a> Kaikki oikeudet pidätetään.
                     </p>
                     <div style={{ display: 'flex', gap: '20px' }}>
                         <Link href="#" style={{ color: '#666' }}><Twitter size={20} /></Link>
