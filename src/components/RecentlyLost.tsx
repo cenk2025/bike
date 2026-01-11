@@ -27,7 +27,10 @@ export default function RecentlyLost() {
                     location: bike.location,
                     time: formatRelativeTime(bike.created_at),
                     image: bike.image_url || "https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=800&auto=format&fit=crop",
-                    status: bike.status.toUpperCase()
+                    status: bike.status.toUpperCase(),
+                    description: bike.description || "Ei lisätietoja saatavilla.",
+                    contact_name: "CycleFound Käyttäjä", // Placeholder until profile join is implemented
+                    contact_email: "support@voon.fi"
                 }));
                 setBikes(mappedBikes);
             }
