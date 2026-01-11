@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bike, User } from "lucide-react";
+import { Bike, User, Menu, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function Header() {
     const [user, setUser] = useState<any>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -20,6 +21,8 @@ export default function Header() {
 
         return () => subscription.unsubscribe();
     }, []);
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     return (
         <header className="glass" style={{
@@ -44,7 +47,8 @@ export default function Header() {
                     CycleFound
                 </Link>
 
-                <nav style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+                {/* Desktop Navigation */}
+                <nav className="desktop-only" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                     <Link href="/loydetyt" style={{ fontWeight: 500 }}>Löydetyt</Link>
                     <Link href="/tarinat" style={{ fontWeight: 500 }}>Menestystarinat</Link>
 
@@ -61,7 +65,52 @@ export default function Header() {
                         </>
                     )}
                 </nav>
+
+                {/* Mobile Menu Button */}
+                <button
+                    className="mobile-only"
+                    onClick={toggleMenu}
+                    style={{ background: 'transparent', color: 'var(--text)', padding: '8px' }}
+                >
+                    {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                </button>
             </div>
+
+            {/* Mobile Navigation Dropdown */}
+            {isMenuOpen && (
+                <div
+                    className="mobile-nav-active"
+                    style={{
+                        position: 'absolute',
+                        top: 'var(--header-height)',
+                        left: 0,
+                        right: 0,
+                        backgroundColor: 'var(--surface)',
+                        borderBottom: '1px solid var(--border)',
+                        padding: '24px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '20px',
+                        boxShadow: 'var(--shadow-lg)'
+                    }}
+                >
+                    <Link href="/loydetyt" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>Löydetyt</Link>
+                    <Link href="/tarinat" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>Menestystarinat</Link>
+                    <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
+                    {user ? (
+                        <Link href="/dashboard" onClick={toggleMenu} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: 'var(--primary-dark)', fontSize: '18px' }}>
+                            <User size={20} /> {user?.user_metadata?.full_name || 'Dashboard'}
+                        </Link>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <Link href="/kirjaudu" onClick={toggleMenu} style={{ fontWeight: 600, color: 'var(--primary-dark)', fontSize: '18px' }}>Kirjaudu</Link>
+                            <Link href="/liity" onClick={toggleMenu} className="primary-button" style={{ justifyContent: 'center', width: '100%', padding: '16px' }}>
+                                Liity nyt
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            )}
         </header>
     );
 }

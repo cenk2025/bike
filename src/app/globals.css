@@ -11,9 +11,9 @@
   --text-muted: #666666;
   --border: #e0e0e0;
   --radius: 12px;
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --font-outfit: 'Outfit', sans-serif;
   --header-height: 72px;
 }
@@ -127,4 +127,40 @@ ul {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 24px;
+}
+
+/* Responsive Utilities */
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+}
+
+/* Mobile Menu Animation */
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.mobile-nav-active {
+  animation: slideDown 0.3s ease forwards;
 }
