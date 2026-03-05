@@ -62,8 +62,9 @@ export default function ReportStolen() {
                 .upload(filePath, file);
 
             if (uploadError) {
-                setError("Kuvan lataus epäonnistui: " + uploadError.message);
-                continue;
+                setError("Kuvan lataus epäonnistui. Tarkista, että tallennus on oikein konfiguroitu.");
+                setUploading(false);
+                return;
             }
 
             const { data: { publicUrl } } = supabase.storage
@@ -76,6 +77,7 @@ export default function ReportStolen() {
         setImages(newImages);
         setUploading(false);
     };
+
 
     const removeImage = (index: number) => {
         setImages(images.filter((_, i) => i !== index));

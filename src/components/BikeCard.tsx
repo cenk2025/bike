@@ -9,7 +9,7 @@ interface BikeCardProps {
     location: string;
     time: string;
     type: string;
-    image: string;
+    image: string | null;
     status?: string;
     description?: string;
     contact_name?: string;
@@ -49,8 +49,15 @@ export default function BikeCard({
                         {status}
                     </div>
                 )}
-                <div style={{ height: '200px', overflow: 'hidden' }}>
-                    <img src={image} alt={`${brand} ${model}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ height: '200px', overflow: 'hidden', backgroundColor: '#f0f0f0' }}>
+                    {image ? (
+                        <img src={image} alt={`${brand} ${model}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#bbb' }}>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="5.5" cy="17.5" r="3.5" /><circle cx="18.5" cy="17.5" r="3.5" /><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5L9 8l-3 4.5h11l-4-7.5" /></svg>
+                            <span style={{ fontSize: '11px', fontWeight: 700 }}>EI KUVAA</span>
+                        </div>
+                    )}
                 </div>
                 <div style={{ padding: '20px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
@@ -121,8 +128,15 @@ export default function BikeCard({
                             <X size={20} />
                         </button>
 
-                        <div style={{ height: '250px', width: '100%' }}>
-                            <img src={image} alt={brand} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ height: '250px', width: '100%', backgroundColor: '#f0f0f0' }}>
+                            {image ? (
+                                <img src={image} alt={brand} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', color: '#bbb' }}>
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="5.5" cy="17.5" r="3.5" /><circle cx="18.5" cy="17.5" r="3.5" /><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5L9 8l-3 4.5h11l-4-7.5" /></svg>
+                                    <span style={{ fontSize: '13px', fontWeight: 700 }}>EI KUVAA</span>
+                                </div>
+                            )}
                         </div>
 
                         <div style={{ padding: '32px' }}>

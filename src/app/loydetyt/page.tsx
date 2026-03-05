@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Info, MapPin, Camera, Send, CheckCircle2, X } from "lucide-react";
+import { ArrowLeft, Info, MapPin, Camera, Send, CheckCircle2, X, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ export default function FoundBike() {
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
@@ -26,6 +27,7 @@ export default function FoundBike() {
         if (!files || files.length === 0) return;
 
         setUploading(true);
+        setUploadError(null);
         const newImages = [...images];
 
         for (let i = 0; i < files.length; i++) {
@@ -35,6 +37,12 @@ export default function FoundBike() {
             const { data, error } = await supabase.storage
                 .from('bike-images')
                 .upload(`found/${fileName}`, file);
+
+            if (error) {
+                setUploadError("Kuvan lataus epäonnistui. Tarkista, että tallennus on oikein konfiguroitu.");
+                setUploading(false);
+                return;
+            }
 
             if (data) {
                 const { data: { publicUrl } } = supabase.storage
@@ -46,6 +54,7 @@ export default function FoundBike() {
         setImages(newImages);
         setUploading(false);
     };
+
 
     const removeImage = (index: number) => {
         setImages(images.filter((_, i) => i !== index));
@@ -166,6 +175,12 @@ export default function FoundBike() {
                             <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Ota kuvia</h2>
                             <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--primary-dark)' }}>Max 4</span>
                         </div>
+                        {uploadError && (
+                            <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '12px', borderRadius: '8px', fontSize: '14px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <AlertCircle size={18} />
+                                {uploadError}
+                            </div>
+                        )}
                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             {images.map((url, index) => (
                                 <div key={index} style={{ position: 'relative', width: '100px', height: '100px' }}>
