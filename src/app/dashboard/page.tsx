@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Plus, Trash2, Edit2, Bike, AlertTriangle, CheckCircle, BookOpen, Send, X } from "lucide-react";
+import { Plus, Trash2, Edit2, Bike, AlertTriangle, CheckCircle, BookOpen, Send, X, Shield } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { useIsAdmin } from "@/lib/admin";
 
 interface BikeData {
     id: string;
@@ -35,6 +36,7 @@ export default function DashboardPage() {
     const [bikes, setBikes] = useState<BikeData[]>([]);
     const [stories, setStories] = useState<StoryData[]>([]);
     const [loading, setLoading] = useState(true);
+    const { isAdmin } = useIsAdmin();
 
     // Story form state
     const [showStoryForm, setShowStoryForm] = useState(false);
@@ -152,7 +154,26 @@ export default function DashboardPage() {
                         <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '8px' }}>Hei, {user?.user_metadata?.full_name || 'Käyttäjä'}!</h1>
                         <p style={{ color: 'var(--text-muted)' }}>Täällä voit hallinnoida pyöriäsi ja ilmoituksiasi.</p>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px' }}>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        {isAdmin && (
+                            <Link
+                                href="/dashboard/admin"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '12px 20px',
+                                    borderRadius: '12px',
+                                    backgroundColor: '#000',
+                                    color: 'var(--primary)',
+                                    fontWeight: 700,
+                                    textDecoration: 'none'
+                                }}
+                                title="Vain ylläpitäjille"
+                            >
+                                <Shield size={18} /> Admin
+                            </Link>
+                        )}
                         <Link href="/ilmoita-varkaudesta" className="primary-button" style={{ borderRadius: '12px' }}>
                             <Plus size={20} /> Lisää pyörä
                         </Link>
