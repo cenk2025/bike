@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Plus, Trash2, Edit2, Bike, AlertTriangle, CheckCircle, BookOpen, Send, X } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 
 interface BikeData {
@@ -30,7 +31,7 @@ interface StoryData {
 }
 
 export default function DashboardPage() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<SupabaseUser | null>(null);
     const [bikes, setBikes] = useState<BikeData[]>([]);
     const [stories, setStories] = useState<StoryData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -43,26 +44,9 @@ export default function DashboardPage() {
 
     const router = useRouter();
 
-    useEffect(() => {
-        const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push("/kirjaudu");
-            } else {
-                setUser(user);
-                // Pre-fill name from user metadata
-                setStoryForm(f => ({
-                    ...f,
-                    full_name: user.user_metadata?.full_name || ""
-                }));
-                fetchBikes(user.id);
-                fetchStories(user.id);
-            }
-        };
-        checkUser();
-    }, [router]);
-
-    const fetchBikes = async (userId: string) => {
+    // Declared before the effect so they can be referenced safely; wrapped in
+    // useCallback to keep stable identity for the effect's dependency array.
+    const fetchBikes = useCallback(async (userId: string) => {
         const { data, error } = await supabase
             .from('bikes')
             .select('*')
@@ -73,9 +57,9 @@ export default function DashboardPage() {
             setBikes(data);
         }
         setLoading(false);
-    };
+    }, []);
 
-    const fetchStories = async (userId: string) => {
+    const fetchStories = useCallback(async (userId: string) => {
         const { data, error } = await supabase
             .from('stories')
             .select('*')
@@ -85,7 +69,26 @@ export default function DashboardPage() {
         if (!error && data) {
             setStories(data);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push("/kirjaudu");
+            } else {
+                setUser(user);
+                // Pre-fill name from user metadata
+                setStoryForm(f => ({
+                    ...f,
+                    full_name: (user.user_metadata?.full_name as string) || ""
+                }));
+                fetchBikes(user.id);
+                fetchStories(user.id);
+            }
+        };
+        checkUser();
+    }, [router, fetchBikes, fetchStories]);
 
     const handleDelete = async (id: string) => {
         if (confirm("Haluatko varmasti poistaa tämän ilmoituksen?")) {
@@ -365,7 +368,7 @@ export default function DashboardPage() {
                                                 {story.approved ? '✓ Julkaistu' : '⏳ Odottaa'}
                                             </span>
                                         </div>
-                                        <p style={{ color: 'var(--text-muted)', fontSize: '15px', lineHeight: 1.6, fontStyle: 'italic' }}>"{story.content}"</p>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '15px', lineHeight: 1.6, fontStyle: 'italic' }}>&ldquo;{story.content}&rdquo;</p>
                                         <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
                                             {new Date(story.created_at).toLocaleDateString('fi-FI')}
                                         </p>

@@ -4,9 +4,35 @@ import { useState, useEffect } from "react";
 import BikeCard from "./BikeCard";
 import { supabase } from "@/lib/supabase";
 
+interface BikeCardData {
+    brand: string;
+    model: string;
+    type: string;
+    location: string;
+    time: string;
+    image: string | null;
+    status: string;
+    description?: string;
+    contact_name?: string;
+    contact_email?: string;
+}
+
+// Simple relative time formatter — declared at module scope so it can be
+// referenced inside the useEffect callback without a TDZ error.
+const formatRelativeTime = (dateString: string) => {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffInMs = now.getTime() - past.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+
+    if (diffInHours < 1) return "Juuri nyt";
+    if (diffInHours < 24) return `${diffInHours}h sitten`;
+    return `${Math.floor(diffInHours / 24)}pv sitten`;
+};
+
 export default function RecentlyLost() {
     const [activeTab, setActiveTab] = useState("Kaikki");
-    const [bikes, setBikes] = useState<any[]>([]);
+    const [bikes, setBikes] = useState<BikeCardData[]>([]);
     const [loading, setLoading] = useState(true);
     const tabs = ["Kaikki", "Maastopyörä", "Maantie", "Sähkö"];
 
@@ -20,7 +46,7 @@ export default function RecentlyLost() {
 
             if (!error && data) {
                 // Map database schema to card expected props if necessary
-                const mappedBikes = data.map(bike => ({
+                const mappedBikes: BikeCardData[] = data.map(bike => ({
                     brand: bike.brand,
                     model: bike.model,
                     type: bike.type || "Pyörä",
@@ -39,18 +65,6 @@ export default function RecentlyLost() {
 
         fetchRecentBikes();
     }, []);
-
-    // Simple relative time formatter
-    const formatRelativeTime = (dateString: string) => {
-        const now = new Date();
-        const past = new Date(dateString);
-        const diffInMs = now.getTime() - past.getTime();
-        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-
-        if (diffInHours < 1) return "Juuri nyt";
-        if (diffInHours < 24) return `${diffInHours}h sitten`;
-        return `${Math.floor(diffInHours / 24)}pv sitten`;
-    };
 
     if (loading) return null;
 

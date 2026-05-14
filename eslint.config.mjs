@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // macOS AppleDouble metadata files that get created on non-HFS volumes.
+    "**/._*",
   ]),
 ]);
 

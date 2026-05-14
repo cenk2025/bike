@@ -76,7 +76,7 @@ export default function StoriesPage() {
                                     <Star size={20} fill="var(--primary)" />
                                 </div>
                                 <Quote size={40} style={{ color: 'var(--border)' }} />
-                                <p style={{ fontSize: '18px', lineHeight: 1.6, fontStyle: 'italic' }}>"{story.content}"</p>
+                                <p style={{ fontSize: '18px', lineHeight: 1.6, fontStyle: 'italic' }}>&ldquo;{story.content}&rdquo;</p>
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
                                     {/* eslint-disable-next-line @next/next/no-img-element */}

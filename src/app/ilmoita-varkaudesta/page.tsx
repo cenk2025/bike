@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { ArrowLeft, Info, MapPin, Camera, Send, ShieldAlert, AlertCircle, X } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 
 export default function ReportStolen() {
@@ -20,7 +21,7 @@ export default function ReportStolen() {
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<SupabaseUser | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
@@ -43,6 +44,8 @@ export default function ReportStolen() {
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
+        // Auth check hasn't resolved yet; the redirect in useEffect will take over.
+        if (!user) return;
 
         setUploading(true);
         setError(null);
@@ -57,7 +60,7 @@ export default function ReportStolen() {
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `${user.id}/${fileName}`;
 
-            const { error: uploadError, data } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('bike-images')
                 .upload(filePath, file);
 
