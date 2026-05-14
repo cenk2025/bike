@@ -3,7 +3,7 @@
 import { useEffect, useState, use, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Save, AlertCircle, Camera, X, Trash2, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Save, AlertCircle, Camera, X, Trash2, Image as ImageIcon, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,10 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
         serial_number: "",
         type: "Maastopyörä",
         location: "",
-        status: "varastettu"
+        status: "varastettu",
+        allow_contact: false,
+        contact_email: "",
+        contact_phone: ""
     });
 
     // Image state
@@ -56,7 +59,10 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
                     serial_number: data.serial_number,
                     type: data.type || "Maastopyörä",
                     location: data.location || "",
-                    status: data.status
+                    status: data.status,
+                    allow_contact: data.allow_contact ?? false,
+                    contact_email: data.contact_email ?? "",
+                    contact_phone: data.contact_phone ?? ""
                 });
                 // Load existing images
                 const existingImages: string[] = [];
@@ -118,13 +124,30 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // If contact is allowed, require at least one channel.
+        if (formData.allow_contact && !formData.contact_email.trim() && !formData.contact_phone.trim()) {
+            setError("Anna joko sähköposti tai puhelinnumero, jotta sinuun voidaan ottaa yhteyttä.");
+            return;
+        }
+
         setSaving(true);
         setError(null);
 
         const { data, error } = await supabase
             .from('bikes')
             .update({
-                ...formData,
+                brand: formData.brand,
+                model: formData.model,
+                serial_number: formData.serial_number,
+                type: formData.type,
+                location: formData.location,
+                status: formData.status,
+                allow_contact: formData.allow_contact,
+                // Clear contact fields when the user opts out, so old values
+                // can't keep leaking after consent is withdrawn.
+                contact_email: formData.allow_contact ? (formData.contact_email.trim() || null) : null,
+                contact_phone: formData.allow_contact ? (formData.contact_phone.trim() || null) : null,
                 image_url: images[0] || null,
                 images: images.length > 0 ? images : [],
             })
@@ -316,6 +339,80 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
                                 placeholder="esim. Mannerheimintie 10, Helsinki" required
                                 style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
                         </div>
+                    </div>
+
+                    {/* ── Contact preferences ── */}
+                    <div className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <h2 style={{ fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Mail size={18} /> Yhteydenotot
+                        </h2>
+
+                        <label
+                            htmlFor="allow_contact"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: '12px',
+                                padding: '16px',
+                                border: '1px solid var(--border)',
+                                borderRadius: '12px',
+                                backgroundColor: formData.allow_contact ? '#e8f5e9' : 'transparent',
+                                cursor: 'pointer',
+                                transition: 'background-color 0.2s'
+                            }}
+                        >
+                            <input
+                                id="allow_contact"
+                                type="checkbox"
+                                checked={formData.allow_contact}
+                                onChange={(e) => setFormData({ ...formData, allow_contact: e.target.checked })}
+                                style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: 'var(--primary-dark)' }}
+                            />
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: '15px' }}>Minuun saa ottaa yhteyttä</div>
+                                <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                    Jos joku löytää pyöräsi, hän voi ottaa sinuun yhteyttä alla antamillasi tiedoilla.
+                                </p>
+                            </div>
+                        </label>
+
+                        {formData.allow_contact && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingLeft: '8px', borderLeft: '3px solid var(--primary)' }}>
+                                <div style={{ paddingLeft: '14px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                                        <Mail size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                                        Sähköposti
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="contact_email"
+                                        value={formData.contact_email}
+                                        onChange={handleChange}
+                                        placeholder="esim. etunimi@esim.fi"
+                                        style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }}
+                                    />
+                                </div>
+
+                                <div style={{ paddingLeft: '14px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                                        <Phone size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                                        Puhelin
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        name="contact_phone"
+                                        value={formData.contact_phone}
+                                        onChange={handleChange}
+                                        placeholder="esim. +358 40 123 4567"
+                                        style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }}
+                                    />
+                                </div>
+
+                                <p style={{ fontSize: '12px', color: 'var(--text-muted)', paddingLeft: '14px' }}>
+                                    Anna ainakin toinen näistä. Ne näkyvät julkisesti pyörän ilmoituksessa.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <button

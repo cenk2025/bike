@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Info, MapPin, Camera, Send, ShieldAlert, AlertCircle, X } from "lucide-react";
+import { ArrowLeft, Info, MapPin, Camera, Send, ShieldAlert, AlertCircle, X, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -15,7 +15,10 @@ export default function ReportStolen() {
         brand: "",
         model: "",
         type: "Maastopyörä",
-        location: ""
+        location: "",
+        allow_contact: false,
+        contact_email: "",
+        contact_phone: ""
     });
     const [images, setImages] = useState<string[]>([]);
     const [uploading, setUploading] = useState(false);
@@ -32,6 +35,12 @@ export default function ReportStolen() {
                 router.push("/kirjaudu?next=/ilmoita-varkaudesta");
             } else {
                 setUser(user);
+                // Pre-fill the contact email with the account email so the
+                // common path (use the login email) is a single checkbox tick.
+                setFormData(f => ({
+                    ...f,
+                    contact_email: f.contact_email || user.email || ""
+                }));
             }
         };
         checkUser();
@@ -90,12 +99,27 @@ export default function ReportStolen() {
         e.preventDefault();
         if (!user) return;
 
+        // If contact is allowed, require at least one channel.
+        if (formData.allow_contact && !formData.contact_email.trim() && !formData.contact_phone.trim()) {
+            setError("Anna joko sähköposti tai puhelinnumero, jotta sinuun voidaan ottaa yhteyttä.");
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
         const { error } = await supabase.from('bikes').insert([
             {
-                ...formData,
+                serial_number: formData.serial_number,
+                brand: formData.brand,
+                model: formData.model,
+                type: formData.type,
+                location: formData.location,
+                allow_contact: formData.allow_contact,
+                // Only persist contact details when the user opted in;
+                // otherwise leave the columns null.
+                contact_email: formData.allow_contact ? (formData.contact_email.trim() || null) : null,
+                contact_phone: formData.allow_contact ? (formData.contact_phone.trim() || null) : null,
                 user_id: user.id,
                 status: 'varastettu',
                 image_url: images[0] || null, // Primary image
@@ -280,6 +304,78 @@ export default function ReportStolen() {
                             multiple
                             style={{ display: 'none' }}
                         />
+                    </section>
+
+                    {/* ── Contact preferences ── */}
+                    <section style={{ marginBottom: '32px' }}>
+                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>Yhteydenotot</h2>
+
+                        <label
+                            htmlFor="allow_contact"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: '12px',
+                                padding: '16px',
+                                border: '1px solid var(--border)',
+                                borderRadius: '12px',
+                                backgroundColor: formData.allow_contact ? '#e8f5e9' : '#fff',
+                                cursor: 'pointer',
+                                transition: 'background-color 0.2s'
+                            }}
+                        >
+                            <input
+                                id="allow_contact"
+                                type="checkbox"
+                                checked={formData.allow_contact}
+                                onChange={(e) => setFormData({ ...formData, allow_contact: e.target.checked })}
+                                style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: 'var(--primary-dark)' }}
+                            />
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: '15px' }}>Minuun saa ottaa yhteyttä</div>
+                                <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                    Jos joku löytää pyöräsi, hän voi ottaa sinuun yhteyttä alla antamillasi tiedoilla.
+                                </p>
+                            </div>
+                        </label>
+
+                        {formData.allow_contact && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px', paddingLeft: '8px', borderLeft: '3px solid var(--primary)' }}>
+                                <div style={{ paddingLeft: '14px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em', alignItems: 'center', gap: '6px' }}>
+                                        <Mail size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                                        SÄHKÖPOSTI
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="contact_email"
+                                        value={formData.contact_email}
+                                        onChange={handleChange}
+                                        placeholder="esim. etunimi@esim.fi"
+                                        style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }}
+                                    />
+                                </div>
+
+                                <div style={{ paddingLeft: '14px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                        <Phone size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                                        PUHELIN
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        name="contact_phone"
+                                        value={formData.contact_phone}
+                                        onChange={handleChange}
+                                        placeholder="esim. +358 40 123 4567"
+                                        style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }}
+                                    />
+                                </div>
+
+                                <p style={{ fontSize: '12px', color: 'var(--text-muted)', paddingLeft: '14px' }}>
+                                    Anna ainakin toinen näistä. Ne näkyvät julkisesti pyörän ilmoituksessa.
+                                </p>
+                            </div>
+                        )}
                     </section>
 
                     <button
