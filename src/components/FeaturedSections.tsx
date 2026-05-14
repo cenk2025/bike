@@ -81,7 +81,7 @@ export default function FeaturedSections() {
                     </div>
 
                     <a
-                        href="mailto:partners@cyclefound.fi?subject=Mainoskumppanuus%20%E2%80%93%20vakuutusyhti%C3%B6"
+                        href="mailto:info@voon.fi?subject=Mainoskumppanuus%20%E2%80%93%20vakuutusyhti%C3%B6"
                         className="primary-button"
                         style={{ alignSelf: 'flex-start', borderRadius: '12px', textDecoration: 'none' }}
                     >
@@ -141,7 +141,7 @@ export default function FeaturedSections() {
                     </div>
 
                     <a
-                        href="mailto:partners@cyclefound.fi?subject=Premium-mainospaikka%20%E2%80%93%20py%C3%B6r%C3%A4-%2Fmoottoripy%C3%B6r%C3%A4yhti%C3%B6"
+                        href="mailto:info@voon.fi?subject=Premium-mainospaikka%20%E2%80%93%20py%C3%B6r%C3%A4-%2Fmoottoripy%C3%B6r%C3%A4yhti%C3%B6"
                         className="primary-button"
                         style={{ backgroundColor: 'var(--primary)', color: '#000', textDecoration: 'none' }}
                     >
