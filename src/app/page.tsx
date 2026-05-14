@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
+import BikeSearch from "@/components/BikeSearch";
 import RecentlyLost from "@/components/RecentlyLost";
 import FeaturedSections from "@/components/FeaturedSections";
 
@@ -34,6 +35,7 @@ export default function Home() {
       <Header />
       <div className="container" style={{ paddingTop: '20px', paddingBottom: '60px' }}>
         <Hero />
+        <BikeSearch />
         <Stats />
         <RecentlyLost />
         <FeaturedSections />
