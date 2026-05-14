@@ -15,6 +15,8 @@ interface BikeCardData {
     description?: string;
     contact_name?: string;
     contact_email?: string;
+    contact_phone?: string;
+    allow_contact?: boolean;
 }
 
 // Simple relative time formatter — declared at module scope so it can be
@@ -45,7 +47,9 @@ export default function RecentlyLost() {
                 .limit(6);
 
             if (!error && data) {
-                // Map database schema to card expected props if necessary
+                // Map database schema to card expected props. BikeCard takes
+                // care of falling back to the CycleFound support address when
+                // allow_contact is false, so we just forward what the DB has.
                 const mappedBikes: BikeCardData[] = data.map(bike => ({
                     brand: bike.brand,
                     model: bike.model,
@@ -55,8 +59,9 @@ export default function RecentlyLost() {
                     image: bike.image_url || null,
                     status: bike.status.toUpperCase(),
                     description: bike.description || "Ei lisätietoja saatavilla.",
-                    contact_name: "CycleFound Käyttäjä", // Placeholder until profile join is implemented
-                    contact_email: "support@voon.fi"
+                    allow_contact: bike.allow_contact ?? false,
+                    contact_email: bike.contact_email ?? undefined,
+                    contact_phone: bike.contact_phone ?? undefined
                 }));
                 setBikes(mappedBikes);
             }

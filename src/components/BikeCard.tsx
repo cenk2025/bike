@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Clock, X, Phone, MessageSquare, User, Info } from "lucide-react";
+import { MapPin, Clock, X, Phone, MessageSquare, User, Info, ShieldCheck } from "lucide-react";
+
+// Fallback contact used when the bike owner has not opted in to being
+// contacted directly. Anyone finding the bike still has someone to reach.
+const SUPPORT_EMAIL = "info@voon.fi";
+const SUPPORT_NAME = "CycleFound-tuki";
 
 interface BikeCardProps {
     brand: string;
@@ -14,6 +19,8 @@ interface BikeCardProps {
     description?: string;
     contact_name?: string;
     contact_email?: string;
+    contact_phone?: string;
+    allow_contact?: boolean;
 }
 
 export default function BikeCard({
@@ -26,9 +33,19 @@ export default function BikeCard({
     status,
     description,
     contact_name,
-    contact_email
+    contact_email,
+    contact_phone,
+    allow_contact
 }: BikeCardProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // When the owner did not opt in (or supplied no email), surface the
+    // CycleFound support address so the contact path is never dead-ended.
+    const ownerOptedIn = allow_contact === true;
+    const displayName = ownerOptedIn ? (contact_name || 'Pyörän omistaja') : SUPPORT_NAME;
+    const displayEmail = ownerOptedIn && contact_email ? contact_email : SUPPORT_EMAIL;
+    const displayPhone = ownerOptedIn ? contact_phone : undefined;
+    const mailtoSubject = encodeURIComponent(`CycleFound: ${brand} ${model}`);
 
     return (
         <>
@@ -177,22 +194,41 @@ export default function BikeCard({
                                 <h4 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>Yhteystiedot</h4>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                        <div style={{ backgroundColor: '#eee', padding: '10px', borderRadius: '50%' }}>
-                                            <User size={18} />
+                                        <div style={{ backgroundColor: ownerOptedIn ? '#eee' : 'var(--primary)', padding: '10px', borderRadius: '50%', display: 'flex' }}>
+                                            {ownerOptedIn ? <User size={18} /> : <ShieldCheck size={18} color="#000" />}
                                         </div>
                                         <div>
-                                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>ILMOITTAJA</p>
-                                            <p style={{ fontWeight: 700 }}>{contact_name || 'Anonyymi käyttäjä'}</p>
+                                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                                {ownerOptedIn ? 'ILMOITTAJA' : 'YHTEYDENOTOT'}
+                                            </p>
+                                            <p style={{ fontWeight: 700 }}>{displayName}</p>
                                         </div>
                                     </div>
 
+                                    {!ownerOptedIn && (
+                                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5, margin: 0 }}>
+                                            Ilmoittaja ei halunnut jakaa yhteystietojaan julkisesti. Viestisi
+                                            ohjataan CycleFoundin tukeen, joka välittää sen omistajalle.
+                                        </p>
+                                    )}
+
                                     <div style={{ display: 'flex', gap: '12px' }}>
-                                        <a href={`mailto:${contact_email || '#'}`} className="primary-button" style={{ flex: 1, justifyContent: 'center', fontSize: '14px', padding: '14px' }}>
+                                        <a
+                                            href={`mailto:${displayEmail}?subject=${mailtoSubject}`}
+                                            className="primary-button"
+                                            style={{ flex: 1, justifyContent: 'center', fontSize: '14px', padding: '14px', textDecoration: 'none' }}
+                                        >
                                             <MessageSquare size={18} /> Viesti
                                         </a>
-                                        <button className="secondary-button" style={{ flex: 1, justifyContent: 'center', fontSize: '14px', padding: '14px', backgroundColor: '#000' }}>
-                                            <Phone size={18} /> Soita
-                                        </button>
+                                        {displayPhone ? (
+                                            <a
+                                                href={`tel:${displayPhone.replace(/\s+/g, '')}`}
+                                                className="secondary-button"
+                                                style={{ flex: 1, justifyContent: 'center', fontSize: '14px', padding: '14px', backgroundColor: '#000', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                            >
+                                                <Phone size={18} /> Soita
+                                            </a>
+                                        ) : null}
                                     </div>
                                 </div>
                             </div>
