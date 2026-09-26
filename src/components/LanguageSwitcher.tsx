@@ -6,7 +6,7 @@ import { LANGS } from "@/i18n/dictionaries";
 export default function LanguageSwitcher() {
     const { lang, setLang, t } = useI18n();
     return (
-        <div role="group" aria-label={t("nav.language")} style={{ display: 'flex', gap: '2px', border: '1px solid var(--border)', borderRadius: '8px', padding: '2px', alignSelf: 'flex-start', width: 'fit-content' }}>
+        <div role="group" aria-label={t("nav.language")} style={{ display: 'flex', gap: '2px', border: '1px solid var(--border)', borderRadius: '8px', padding: '2px', width: 'fit-content' }}>
             {LANGS.map(code => (
                 <button
                     key={code}
