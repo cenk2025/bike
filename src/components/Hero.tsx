@@ -51,6 +51,15 @@ export default function Hero() {
                         Löysitkö pyörän?
                     </Link>
                 </div>
+
+                <div style={{ display: 'flex', gap: '12px 28px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '28px', fontSize: '15px' }}>
+                    <Link href="/ilmoita-varkaudesta?tila=rekisteroi" style={{ color: '#fff', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '4px' }}>
+                        Rekisteröi pyöräsi ennakkoon →
+                    </Link>
+                    <Link href="/tarkista" style={{ color: '#fff', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '4px' }}>
+                        Ostamassa käytettyä? Tarkista sarjanumero →
+                    </Link>
+                </div>
             </div>
         </section>
     );

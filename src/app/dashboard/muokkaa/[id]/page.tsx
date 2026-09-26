@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import { ArrowLeft, Save, AlertCircle, Camera, X, Trash2, Image as ImageIcon, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { uploadBikeImages } from "@/lib/images";
+import { BIKE_COLORS, BIKE_TYPES, CITIES } from "@/lib/bikes";
 import { useRouter } from "next/navigation";
 
 export default function EditBikePage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,6 +18,11 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
         serial_number: "",
         type: "Maastopyörä",
         location: "",
+        city: "",
+        color: "",
+        event_date: "",
+        police_report_number: "",
+        description: "",
         status: "varastettu",
         allow_contact: false,
         contact_email: "",
@@ -56,9 +63,14 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
                 setFormData({
                     brand: data.brand,
                     model: data.model,
-                    serial_number: data.serial_number,
-                    type: data.type || "Maastopyörä",
+                    serial_number: data.serial_number ?? "",
+                    type: data.type || "Muu",
                     location: data.location || "",
+                    city: data.city ?? "",
+                    color: data.color ?? "",
+                    event_date: data.event_date ?? "",
+                    police_report_number: data.police_report_number ?? "",
+                    description: data.description ?? "",
                     status: data.status,
                     allow_contact: data.allow_contact ?? false,
                     contact_email: data.contact_email ?? "",
@@ -78,7 +90,7 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
         fetchBike();
     }, [id, router]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
@@ -88,34 +100,11 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
         setUploading(true);
         setUploadError(null);
 
-        const newImages = [...images];
-
-        for (let i = 0; i < files.length; i++) {
-            if (newImages.length >= 4) break;
-            const file = files[i];
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${userId}/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('bike-images')
-                .upload(filePath, file);
-
-            if (uploadError) {
-                setUploadError("Kuvan lataus epäonnistui. Tarkista, että tallennus on oikein konfiguroitu.");
-                setUploading(false);
-                return;
-            }
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('bike-images')
-                .getPublicUrl(filePath);
-
-            newImages.push(publicUrl);
-        }
-
-        setImages(newImages);
+        const { urls, error } = await uploadBikeImages(files, userId, images);
+        setImages(urls);
+        if (error) setUploadError(error);
         setUploading(false);
+        e.target.value = "";
     };
 
     const removeImage = (index: number) => {
@@ -127,7 +116,7 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
 
         // If contact is allowed, require at least one channel.
         if (formData.allow_contact && !formData.contact_email.trim() && !formData.contact_phone.trim()) {
-            setError("Anna joko sähköposti tai puhelinnumero, jotta sinuun voidaan ottaa yhteyttä.");
+            setError("Anna joko sähköposti tai puhelinnumero ilmoituksia varten.");
             return;
         }
 
@@ -139,9 +128,14 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
             .update({
                 brand: formData.brand,
                 model: formData.model,
-                serial_number: formData.serial_number,
+                serial_number: formData.serial_number.trim() || null,
                 type: formData.type,
                 location: formData.location,
+                city: formData.city.trim() || null,
+                color: formData.color.trim() || null,
+                event_date: formData.event_date || null,
+                police_report_number: formData.police_report_number.trim() || null,
+                description: formData.description.trim() || null,
                 status: formData.status,
                 allow_contact: formData.allow_contact,
                 // Clear contact fields when the user opts out, so old values
@@ -298,8 +292,9 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
                             <select name="status" value={formData.status} onChange={handleChange}
                                 style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px', backgroundColor: '#fff' }}>
                                 <option value="varastettu">Varastettu</option>
-                                <option value="löytynyt">Löytynyt</option>
-                                <option value="ilmoitettu">Ilmoitettu</option>
+                                <option value="rekisteröity">Rekisteröity (ei julkinen)</option>
+                                <option value="ilmoitettu">Löydetty – odottaa omistajaa</option>
+                                <option value="löytynyt">Palautettu omistajalle</option>
                             </select>
                         </div>
 
@@ -317,7 +312,7 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
 
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Sarjanumero</label>
-                            <input type="text" name="serial_number" value={formData.serial_number} onChange={handleChange} required
+                            <input type="text" name="serial_number" value={formData.serial_number} onChange={handleChange} autoComplete="off"
                                 style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
                         </div>
 
@@ -325,19 +320,42 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Tyyppi</label>
                             <select name="type" value={formData.type} onChange={handleChange}
                                 style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px', backgroundColor: '#fff' }}>
-                                <option value="Maastopyörä">Maastopyörä</option>
-                                <option value="Maantie">Maantie</option>
-                                <option value="Sähkö">Sähkö</option>
-                                <option value="Kaupunki">Kaupunki</option>
-                                <option value="Muu">Muu</option>
+                                {BIKE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                             </select>
                         </div>
 
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Viimeisin sijainti</label>
                             <input type="text" name="location" value={formData.location} onChange={handleChange}
-                                placeholder="esim. Mannerheimintie 10, Helsinki" required
+                                placeholder="esim. Mannerheimintie 10" required
                                 style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Kaupunki</label>
+                            <input type="text" name="city" list="cities" value={formData.city} onChange={handleChange} placeholder="esim. Helsinki" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
+                        </div>
+                        <datalist id="cities">{CITIES.map(c => <option key={c} value={c} />)}</datalist>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Väri</label>
+                            <input type="text" name="color" list="bike-colors" value={formData.color} onChange={handleChange} placeholder="esim. musta" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
+                        </div>
+                        <datalist id="bike-colors">{BIKE_COLORS.map(c => <option key={c} value={c} />)}</datalist>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Tapahtumapäivä (varkaus / löytö)</label>
+                            <input type="date" name="event_date" value={formData.event_date} onChange={handleChange} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Rikosilmoituksen numero</label>
+                            <input type="text" name="police_report_number" value={formData.police_report_number} onChange={handleChange} placeholder="esim. 5010/R/12345/26" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Tuntomerkit</label>
+                            <textarea name="description" value={formData.description} onChange={handleChange} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px', minHeight: '100px', fontFamily: 'inherit' }} />
                         </div>
                     </div>
 
@@ -369,9 +387,9 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
                                 style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: 'var(--primary-dark)' }}
                             />
                             <div>
-                                <div style={{ fontWeight: 700, fontSize: '15px' }}>Minuun saa ottaa yhteyttä</div>
+                                <div style={{ fontWeight: 700, fontSize: '15px' }}>Ilmoita minulle osumista ja viesteistä</div>
                                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                                    Jos joku löytää pyöräsi, hän voi ottaa sinuun yhteyttä alla antamillasi tiedoilla.
+                                    Saat tiedon, kun joku ilmoittaa löytäneensä vastaavan pyörän tai lähettää sinulle viestin.
                                 </p>
                             </div>
                         </label>
@@ -409,7 +427,7 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
                                 </div>
 
                                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', paddingLeft: '14px' }}>
-                                    Anna ainakin toinen näistä. Ne näkyvät julkisesti pyörän ilmoituksessa.
+                                    Anna ainakin toinen näistä. Yhteystietojasi ei näytetä julkisesti.
                                 </p>
                             </div>
                         )}

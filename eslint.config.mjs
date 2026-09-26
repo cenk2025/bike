@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Deno code (Supabase Edge Functions) is not part of the Next.js app.
+    "supabase/functions/**",
     // macOS AppleDouble metadata files that get created on non-HFS volumes.
     "**/._*",
   ]),

@@ -29,7 +29,9 @@ export default function LoginPage() {
             setError(error.message);
             setLoading(false);
         } else {
-            router.push("/dashboard");
+            // Return to the page that sent the user here (only same-site paths).
+            const next = new URLSearchParams(window.location.search).get("next");
+            router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
         }
     };
 
