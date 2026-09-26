@@ -1,4 +1,4 @@
-// Supabase Edge Function: e-mails the right person when
+// Supabase Edge Function: e-mails (and push-notifies) the right person when
 //   * a new row is inserted into bike_matches  -> owner of the lost bike
 //   * a new row is inserted into bike_messages -> owner of the bike, or the
 //     anonymous finder (bikes.finder_email) for found reports.
@@ -6,12 +6,16 @@
 // Deploy:
 //   supabase functions deploy notify-owner --no-verify-jwt
 //   supabase secrets set RESEND_API_KEY=... WEBHOOK_SECRET=... \
-//       MAIL_FROM="CycleFound <noreply@voon.fi>" SITE_URL=https://bike.voon.fi
+//       MAIL_FROM="CycleFound <noreply@voon.fi>" SITE_URL=https://bike.voon.fi \
+//       VAPID_PUBLIC_KEY=... VAPID_PRIVATE_KEY=... VAPID_SUBJECT=mailto:info@voon.fi
+// (Generate the VAPID pair once with: npx web-push generate-vapid-keys, and
+//  put the public key also in the app env as NEXT_PUBLIC_VAPID_PUBLIC_KEY.)
 // Then in Supabase: Database -> Webhooks -> create two webhooks (INSERT on
 // public.bike_matches and INSERT on public.bike_messages) pointing to this
 // function's URL, with an HTTP header  x-webhook-secret: <WEBHOOK_SECRET>.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import webpush from "npm:web-push@3.6.7";
 
 const SITE_URL = Deno.env.get("SITE_URL") ?? "https://bike.voon.fi";
 const MAIL_FROM = Deno.env.get("MAIL_FROM") ?? "CycleFound <noreply@voon.fi>";
@@ -55,6 +59,40 @@ async function ownerEmail(bike: Bike): Promise<string | null> {
     return data.user?.email ?? null;
 }
 
+const pushEnabled = Boolean(Deno.env.get("VAPID_PUBLIC_KEY") && Deno.env.get("VAPID_PRIVATE_KEY"));
+if (pushEnabled) {
+    webpush.setVapidDetails(
+        Deno.env.get("VAPID_SUBJECT") ?? "mailto:info@voon.fi",
+        Deno.env.get("VAPID_PUBLIC_KEY")!,
+        Deno.env.get("VAPID_PRIVATE_KEY")!
+    );
+}
+
+// Sends a browser push to every device the user enabled; drops dead endpoints.
+async function sendPush(userId: string | null, title: string, body: string) {
+    if (!pushEnabled || !userId) return;
+    const { data: subs } = await admin
+        .from("push_subscriptions")
+        .select("id, endpoint, p256dh, auth")
+        .eq("user_id", userId);
+
+    await Promise.all((subs ?? []).map(async sub => {
+        try {
+            await webpush.sendNotification(
+                { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+                JSON.stringify({ title, body, url: `${SITE_URL}/dashboard` })
+            );
+        } catch (err) {
+            const status = (err as { statusCode?: number }).statusCode;
+            if (status === 404 || status === 410) {
+                await admin.from("push_subscriptions").delete().eq("id", sub.id);
+            } else {
+                console.error("push failed", status, err);
+            }
+        }
+    }));
+}
+
 async function sendMail(to: string, subject: string, html: string, replyTo?: string) {
     const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -80,8 +118,9 @@ Deno.serve(async req => {
         if (payload.table === "bike_matches") {
             const [lost, found] = await Promise.all([getBike(record.lost_bike_id), getBike(record.found_bike_id)]);
             if (!lost || !found) return new Response("missing bike");
+            await sendPush(lost.user_id, "Mahdollinen osuma!", `Löydetty pyörä vastaa pyörääsi ${title(lost)}.`);
             const to = await ownerEmail(lost);
-            if (!to) return new Response("owner not notified");
+            if (!to) return new Response("owner not notified by e-mail");
 
             await sendMail(
                 to,
@@ -95,6 +134,7 @@ Deno.serve(async req => {
         } else if (payload.table === "bike_messages") {
             const bike = await getBike(record.bike_id);
             if (!bike) return new Response("missing bike");
+            await sendPush(bike.user_id, "Uusi viesti", `${record.sender_name}: ${String(record.body).slice(0, 120)}`);
             const to = bike.user_id ? await ownerEmail(bike) : bike.finder_email;
             if (!to) return new Response("no recipient");
 

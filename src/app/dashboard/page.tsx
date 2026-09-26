@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Plus, Trash2, Edit2, Bike, BookOpen, Send, X, Shield, CheckCircle, AlertTriangle, PartyPopper } from "lucide-react";
+import { Plus, Trash2, Edit2, Bike, BookOpen, Send, X, Shield, CheckCircle, AlertTriangle, PartyPopper, QrCode } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -12,6 +12,7 @@ import { useIsAdmin } from "@/lib/admin";
 import { bikeTitle, statusStyle } from "@/lib/bikes";
 import MatchesPanel from "@/components/dashboard/MatchesPanel";
 import MessagesPanel from "@/components/dashboard/MessagesPanel";
+import PushToggle from "@/components/dashboard/PushToggle";
 
 interface BikeData {
     id: string;
@@ -206,6 +207,8 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
+                <PushToggle />
+
                 {user && <MatchesPanel onBikeRecovered={() => fetchBikes(user.id)} />}
 
                 {/* ── Bikes section ── */}
@@ -279,9 +282,16 @@ export default function DashboardPage() {
                                             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                                                 Lisätty: {new Date(bike.created_at).toLocaleDateString('fi-FI')}
                                             </span>
-                                            <Link href={`/dashboard/muokkaa/${bike.id}`} style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary-dark)' }}>
-                                                Tiedot
-                                            </Link>
+                                            <div style={{ display: 'flex', gap: '16px' }}>
+                                                {bike.status !== 'ilmoitettu' && (
+                                                    <Link href={`/dashboard/tarra/${bike.id}`} style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <QrCode size={14} /> QR-tarra
+                                                    </Link>
+                                                )}
+                                                <Link href={`/dashboard/muokkaa/${bike.id}`} style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary-dark)' }}>
+                                                    Tiedot
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

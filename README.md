@@ -35,7 +35,9 @@ Aja SQL-tiedostot Supabasen SQL-editorissa tässä järjestyksessä:
 1. `migrations/2026-05-14_add_bike_contact_fields.sql`
 2. `migrations/2026-05-14_admin_and_ad_slots.sql`
 3. `migrations/2026-09-26_matching_privacy_stats.sql` – automaattinen vertailu, yksityisyys, tilastot, viestit
-4. *(valinnainen)* `migrations/demo_seed.sql` – demodata. Poista ennen julkaisua:
+4. `migrations/2026-09-27_tags_push_retention.sql` – QR-tarrat, push-ilmoitukset, tietojen säilytysajat
+   (ota ensin käyttöön `pg_cron`: Database → Extensions)
+5. *(valinnainen)* `migrations/demo_seed.sql` – demodata. Poista ennen julkaisua:
    `delete from bikes where is_demo; delete from stories where is_demo;`
 
 ### Miten vertailu toimii
