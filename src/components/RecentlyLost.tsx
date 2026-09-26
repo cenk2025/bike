@@ -1,132 +1,77 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Bike as BikeIcon } from "lucide-react";
 import BikeCard from "./BikeCard";
 import { supabase } from "@/lib/supabase";
+import type { PublicBike } from "@/lib/bikes";
 
-interface BikeCardData {
-    brand: string;
-    model: string;
-    type: string;
-    location: string;
-    time: string;
-    image: string | null;
-    status: string;
-    description?: string;
-    contact_name?: string;
-    contact_email?: string;
-    contact_phone?: string;
-    allow_contact?: boolean;
-}
-
-// Simple relative time formatter — declared at module scope so it can be
-// referenced inside the useEffect callback without a TDZ error.
-const formatRelativeTime = (dateString: string) => {
-    const now = new Date();
-    const past = new Date(dateString);
-    const diffInMs = now.getTime() - past.getTime();
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-
-    if (diffInHours < 1) return "Juuri nyt";
-    if (diffInHours < 24) return `${diffInHours}h sitten`;
-    return `${Math.floor(diffInHours / 24)}pv sitten`;
-};
+const TABS: { label: string; match: (b: PublicBike) => boolean }[] = [
+    { label: "Kaikki", match: () => true },
+    { label: "Varastetut", match: b => b.status === "varastettu" },
+    { label: "Löydetyt", match: b => b.status === "ilmoitettu" },
+    { label: "Sähkö", match: b => b.type === "Sähkö" || b.type === "Sähköpotkulauta" },
+    { label: "Moottoripyörät", match: b => b.type === "Moottoripyörä" || b.type === "Mopo" }
+];
 
 export default function RecentlyLost() {
     const [activeTab, setActiveTab] = useState("Kaikki");
-    const [bikes, setBikes] = useState<BikeCardData[]>([]);
+    const [bikes, setBikes] = useState<PublicBike[]>([]);
     const [loading, setLoading] = useState(true);
-    const tabs = ["Kaikki", "Maastopyörä", "Maantie", "Sähkö"];
 
     useEffect(() => {
-        const fetchRecentBikes = async () => {
+        (async () => {
             const { data, error } = await supabase
-                .from('bikes')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(6);
+                .from("bikes_public")
+                .select("*")
+                .in("status", ["varastettu", "ilmoitettu"])
+                .order("created_at", { ascending: false })
+                .limit(24);
 
-            if (!error && data) {
-                // Map database schema to card expected props. BikeCard takes
-                // care of falling back to the CycleFound support address when
-                // allow_contact is false, so we just forward what the DB has.
-                const mappedBikes: BikeCardData[] = data.map(bike => ({
-                    brand: bike.brand,
-                    model: bike.model,
-                    type: bike.type || "Pyörä",
-                    location: bike.location,
-                    time: formatRelativeTime(bike.created_at),
-                    image: bike.image_url || null,
-                    status: bike.status.toUpperCase(),
-                    description: bike.description || "Ei lisätietoja saatavilla.",
-                    allow_contact: bike.allow_contact ?? false,
-                    contact_email: bike.contact_email ?? undefined,
-                    contact_phone: bike.contact_phone ?? undefined
-                }));
-                setBikes(mappedBikes);
-            }
+            if (!error && data) setBikes(data as PublicBike[]);
             setLoading(false);
-        };
-
-        fetchRecentBikes();
+        })();
     }, []);
 
     if (loading) return null;
 
-    // Fallback if no bikes in DB yet (show mock data or empty state)
-    const displayBikes = bikes.length > 0 ? bikes : [
-        {
-            brand: "Specialized",
-            model: "Rockhopper",
-            type: "Maastopyörä",
-            location: "Helsinki, Kallio",
-            time: "2h sitten",
-            image: "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?q=80&w=800&auto=format&fit=crop",
-            status: "VARASTETTU"
-        },
-        {
-            brand: "Pelago",
-            model: "San Sebastian",
-            type: "Maantie",
-            location: "Espoo, Tapiola",
-            time: "5h sitten",
-            image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=800&auto=format&fit=crop",
-            status: "ILMOITETTU"
-        }
-    ];
+    const matcher = TABS.find(t => t.label === activeTab)?.match ?? (() => true);
+    const visible = bikes.filter(matcher).slice(0, 9);
 
     return (
         <section className="container" style={{ margin: '60px auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <h2 className="section-title" style={{ marginBottom: 0 }}>Viimeksi kadonneet</h2>
-                <button style={{ color: 'var(--primary-dark)', fontWeight: 600, backgroundColor: 'transparent' }}>Näytä kartalla</button>
-            </div>
+            <h2 className="section-title" style={{ marginBottom: '32px' }}>Viimeisimmät ilmoitukset</h2>
 
             <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', overflowX: 'auto', paddingBottom: '8px' }}>
-                {tabs.map(tab => (
+                {TABS.map(({ label }) => (
                     <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
+                        key={label}
+                        onClick={() => setActiveTab(label)}
                         style={{
                             padding: '10px 24px',
                             borderRadius: '30px',
-                            backgroundColor: activeTab === tab ? 'var(--primary)' : 'var(--surface)',
-                            color: activeTab === tab ? '#000' : 'var(--text-muted)',
-                            border: activeTab === tab ? 'none' : '1px solid var(--border)',
+                            backgroundColor: activeTab === label ? 'var(--primary)' : 'var(--surface)',
+                            color: activeTab === label ? '#000' : 'var(--text-muted)',
+                            border: activeTab === label ? 'none' : '1px solid var(--border)',
                             fontWeight: 600,
                             whiteSpace: 'nowrap'
                         }}
                     >
-                        {tab}
+                        {label}
                     </button>
                 ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                {displayBikes.filter(bike => activeTab === "Kaikki" || bike.type === activeTab).map((bike, index) => (
-                    <BikeCard key={index} {...bike} />
-                ))}
-            </div>
+            {visible.length === 0 ? (
+                <div className="card" style={{ textAlign: 'center', padding: '48px', border: '2px dashed var(--border)', background: 'transparent' }}>
+                    <BikeIcon size={40} style={{ color: 'var(--border)', marginBottom: '12px' }} />
+                    <p style={{ color: 'var(--text-muted)' }}>Ei ilmoituksia tässä kategoriassa.</p>
+                </div>
+            ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+                    {visible.map(bike => <BikeCard key={bike.id} bike={bike} />)}
+                </div>
+            )}
         </section>
     );
 }

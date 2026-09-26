@@ -3,87 +3,42 @@
 import { useEffect, useState } from "react";
 import { Search, X, Bike as BikeIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import type { PublicBike } from "@/lib/bikes";
 import BikeCard from "./BikeCard";
 
-interface SearchResult {
-    id: string;
-    brand: string;
-    model: string;
-    type: string | null;
-    location: string;
-    image_url: string | null;
-    status: string;
-    created_at: string;
-    description: string | null;
-    allow_contact: boolean | null;
-    contact_email: string | null;
-    contact_phone: string | null;
-}
-
-// Same helper RecentlyLost uses. Kept local for now; if a third caller appears
-// we should lift it to src/lib/time.ts and dedupe.
-const formatRelativeTime = (dateString: string) => {
-    const now = new Date();
-    const past = new Date(dateString);
-    const diffH = Math.floor((now.getTime() - past.getTime()) / 3_600_000);
-    if (diffH < 1) return "Juuri nyt";
-    if (diffH < 24) return `${diffH}h sitten`;
-    return `${Math.floor(diffH / 24)}pv sitten`;
-};
-
 /**
- * Live, debounced search over the bikes table. Matches against:
- *   - serial_number
- *   - brand
- *   - model
- *   - location (city / address)
- *
- * The four columns are OR'd together in a single PostgREST query so the user
- * does not need to pick which field to search — they just type.
+ * Live, debounced search over public bike reports (`search_bikes` RPC).
+ * Matches brand, model, colour, city and location by substring, and a serial
+ * number only when the whole serial is typed – partial serials are not
+ * searchable so they can't be enumerated.
  */
 export default function BikeSearch() {
     const [query, setQuery] = useState("");
-    const [results, setResults] = useState<SearchResult[] | null>(null);
-    const [loading, setLoading] = useState(false);
+    // Results are stored together with the query they belong to, so stale
+    // results are never shown for a newer query.
+    const [result, setResult] = useState<{ q: string; bikes: PublicBike[] } | null>(null);
+
+    const q = query.trim();
+    const active = q.length >= 2;
+    const results = active && result?.q === q ? result.bikes : null;
+    const loading = active && result?.q !== q;
 
     useEffect(() => {
-        const q = query.trim();
         // Don't fire on every keystroke — wait until the user has typed at
         // least two characters and paused for 300ms.
-        if (q.length < 2) {
-            setResults(null);
-            setLoading(false);
-            return;
-        }
+        if (q.length < 2) return;
 
+        let cancelled = false;
         const handle = setTimeout(async () => {
-            setLoading(true);
-            // PostgREST's or() filter uses comma/parentheses as syntax — strip
-            // anything that could break it out of the user's query.
-            const safe = q.replace(/[,()'"%\\]/g, "").trim();
-            if (!safe) {
-                setResults([]);
-                setLoading(false);
-                return;
-            }
-            const pattern = `%${safe}%`;
-            const { data, error } = await supabase
-                .from("bikes")
-                .select("*")
-                .or(
-                    `serial_number.ilike.${pattern},brand.ilike.${pattern},` +
-                    `model.ilike.${pattern},location.ilike.${pattern}`
-                )
-                .order("created_at", { ascending: false })
-                .limit(24);
-
-            if (!error) setResults(data ?? []);
-            else setResults([]);
-            setLoading(false);
+            const { data, error } = await supabase.rpc("search_bikes", { q, max_results: 24 });
+            if (!cancelled) setResult({ q, bikes: !error && data ? (data as PublicBike[]) : [] });
         }, 300);
 
-        return () => clearTimeout(handle);
-    }, [query]);
+        return () => {
+            cancelled = true;
+            clearTimeout(handle);
+        };
+    }, [q]);
 
     return (
         <section className="container" style={{ margin: '32px auto' }}>
@@ -106,7 +61,7 @@ export default function BikeSearch() {
                     type="search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Etsi sarjanumerolla, merkillä, mallilla tai kaupungilla…"
+                    placeholder="Etsi merkillä, mallilla, värillä, kaupungilla tai koko sarjanumerolla…"
                     aria-label="Etsi pyöriä"
                     style={{
                         flex: 1,
@@ -131,9 +86,9 @@ export default function BikeSearch() {
             </label>
 
             {/* Status row — only when a query is in flight or returned. */}
-            {results !== null && (
+            {active && (
                 <div style={{ marginTop: '24px' }}>
-                    {loading ? (
+                    {loading || results === null ? (
                         <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '20px' }}>
                             Etsitään…
                         </p>
@@ -155,20 +110,7 @@ export default function BikeSearch() {
                             </p>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                                 {results.map(bike => (
-                                    <BikeCard
-                                        key={bike.id}
-                                        brand={bike.brand}
-                                        model={bike.model}
-                                        type={bike.type || "Pyörä"}
-                                        location={bike.location}
-                                        time={formatRelativeTime(bike.created_at)}
-                                        image={bike.image_url}
-                                        status={bike.status.toUpperCase()}
-                                        description={bike.description || undefined}
-                                        allow_contact={bike.allow_contact ?? false}
-                                        contact_email={bike.contact_email ?? undefined}
-                                        contact_phone={bike.contact_phone ?? undefined}
-                                    />
+                                    <BikeCard key={bike.id} bike={bike} />
                                 ))}
                             </div>
                         </>

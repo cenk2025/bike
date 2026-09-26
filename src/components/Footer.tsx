@@ -21,7 +21,9 @@ export default function Footer() {
                     <div>
                         <h4 style={{ marginBottom: '20px', fontSize: '18px' }}>Alusta</h4>
                         <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <li><Link href="/ilmoita-varkaudesta" style={{ color: '#aaa', fontSize: '14px' }}>Kadonneet pyörät</Link></li>
+                            <li><Link href="/ilmoita-varkaudesta" style={{ color: '#aaa', fontSize: '14px' }}>Ilmoita varkaus</Link></li>
+                            <li><Link href="/loydetyt" style={{ color: '#aaa', fontSize: '14px' }}>Löysin pyörän</Link></li>
+                            <li><Link href="/tarkista" style={{ color: '#aaa', fontSize: '14px' }}>Tarkista sarjanumero</Link></li>
                             <li><Link href="/tarinat" style={{ color: '#aaa', fontSize: '14px' }}>Onnistumistarinat</Link></li>
                             <li><Link href="/liity" style={{ color: '#aaa', fontSize: '14px' }}>Liity jäseneksi</Link></li>
                         </ul>

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useIsAdmin, type AdSlot } from "@/lib/admin";
+import MessagesPanel from "@/components/dashboard/MessagesPanel";
 import {
     ArrowLeft, Save, AlertCircle, Camera, X, Image as ImageIcon,
     CheckCircle, Shield, RefreshCw, Eye, EyeOff
@@ -27,9 +28,12 @@ const SLOT_LABELS: Record<string, { name: string; hint: string }> = {
     }
 };
 
+// Module-level so the React compiler lint does not treat it as render-time impurity.
+const uniqueFileId = () => Date.now().toString(36);
+
 export default function AdminPage() {
     const router = useRouter();
-    const { loading: adminLoading, isAdmin } = useIsAdmin();
+    const { loading: adminLoading, isAdmin, userId } = useIsAdmin();
     const [slots, setSlots] = useState<SlotForm[]>([]);
     const [loading, setLoading] = useState(true);
     const [savingSlug, setSavingSlug] = useState<string | null>(null);
@@ -58,6 +62,7 @@ export default function AdminPage() {
             return;
         }
         if (isAdmin === true) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data fetch
             fetchSlots();
         }
     }, [adminLoading, isAdmin, router, fetchSlots]);
@@ -72,7 +77,7 @@ export default function AdminPage() {
         setError(null);
 
         const ext = file.name.split(".").pop() || "jpg";
-        const path = `${slug}/${Date.now()}.${ext}`;
+        const path = `${slug}/${uniqueFileId()}.${ext}`;
         const { error: uploadError } = await supabase.storage
             .from("ad-images")
             .upload(path, file, { upsert: true });
@@ -153,6 +158,8 @@ export default function AdminPage() {
                     Muokkaa etusivun kahta mainoslaatikkoa: tekstit, kuvat ja toimintokutsut.
                     Muutokset näkyvät heti, kun ne on tallennettu.
                 </p>
+
+                {userId && <MessagesPanel userId={userId} scope="admin" />}
 
                 {error && (
                     <div style={{ backgroundColor: "#fee2e2", color: "#dc2626", padding: "12px 16px", borderRadius: "12px", display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px", fontSize: "14px" }}>

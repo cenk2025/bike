@@ -3,18 +3,21 @@
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Plus, Trash2, Edit2, Bike, AlertTriangle, CheckCircle, BookOpen, Send, X, Shield } from "lucide-react";
+import { Plus, Trash2, Edit2, Bike, BookOpen, Send, X, Shield, CheckCircle, AlertTriangle, PartyPopper } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useIsAdmin } from "@/lib/admin";
+import { bikeTitle, statusStyle } from "@/lib/bikes";
+import MatchesPanel from "@/components/dashboard/MatchesPanel";
+import MessagesPanel from "@/components/dashboard/MessagesPanel";
 
 interface BikeData {
     id: string;
     brand: string;
     model: string;
-    serial_number: string;
+    serial_number: string | null;
     status: string;
     location: string;
     created_at: string;
@@ -101,6 +104,23 @@ export default function DashboardPage() {
         }
     };
 
+    const setBikeStatus = async (id: string, status: "löytynyt" | "varastettu") => {
+        const patch = status === "varastettu"
+            ? { status, event_date: new Date().toISOString().slice(0, 10) }
+            : { status };
+        const { error } = await supabase.from('bikes').update(patch).eq('id', id);
+        if (error) {
+            alert("Tilan päivitys epäonnistui: " + error.message);
+            return;
+        }
+        if (status === "varastettu") {
+            // Let the owner add the theft location and police report number.
+            router.push(`/dashboard/muokkaa/${id}`);
+        } else if (user) {
+            fetchBikes(user.id);
+        }
+    };
+
     const handleDeleteStory = async (id: string) => {
         if (confirm("Haluatko varmasti poistaa tämän tarinan?")) {
             const { error } = await supabase.from('stories').delete().eq('id', id);
@@ -174,14 +194,19 @@ export default function DashboardPage() {
                                 <Shield size={18} /> Admin
                             </Link>
                         )}
-                        <Link href="/ilmoita-varkaudesta" className="primary-button" style={{ borderRadius: '12px' }}>
-                            <Plus size={20} /> Lisää pyörä
+                        <Link href="/ilmoita-varkaudesta?tila=rekisteroi" className="primary-button" style={{ borderRadius: '12px' }}>
+                            <Plus size={20} /> Rekisteröi pyörä
+                        </Link>
+                        <Link href="/ilmoita-varkaudesta" className="secondary-button" style={{ borderRadius: '12px', backgroundColor: 'var(--secondary)' }}>
+                            <AlertTriangle size={20} /> Ilmoita varkaus
                         </Link>
                         <button onClick={handleLogout} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', fontWeight: 600, backgroundColor: '#fff' }}>
                             Kirjaudu ulos
                         </button>
                     </div>
                 </div>
+
+                {user && <MatchesPanel onBikeRecovered={() => fetchBikes(user.id)} />}
 
                 {/* ── Bikes section ── */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px', marginBottom: '60px' }}>
@@ -200,6 +225,7 @@ export default function DashboardPage() {
                                     {/* Bike image */}
                                     <div style={{ height: '160px', backgroundColor: '#f0f0f0', position: 'relative', overflow: 'hidden' }}>
                                         {bike.image_url ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
                                             <img
                                                 src={bike.image_url}
                                                 alt={`${bike.brand} ${bike.model}`}
@@ -219,35 +245,43 @@ export default function DashboardPage() {
                                                 borderRadius: '20px',
                                                 fontSize: '12px',
                                                 fontWeight: 700,
-                                                backgroundColor: bike.status === 'varastettu' ? '#fee2e2' : '#e8f5e9',
-                                                color: bike.status === 'varastettu' ? '#dc2626' : '#2e7d32',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '4px'
+                                                backgroundColor: statusStyle(bike.status).bg,
+                                                color: statusStyle(bike.status).fg,
+                                                textTransform: 'uppercase'
                                             }}>
-                                                {bike.status === 'varastettu' ? <AlertTriangle size={14} /> : <CheckCircle size={14} />}
-                                                {bike.status.toUpperCase()}
+                                                {statusStyle(bike.status).label}
                                             </div>
                                             <div style={{ display: 'flex', gap: '8px' }}>
-                                                <button style={{ color: 'var(--text-muted)' }} onClick={() => router.push(`/dashboard/muokkaa/${bike.id}`)}>
+                                                <button aria-label="Muokkaa" style={{ color: 'var(--text-muted)' }} onClick={() => router.push(`/dashboard/muokkaa/${bike.id}`)}>
                                                     <Edit2 size={18} />
                                                 </button>
-                                                <button style={{ color: '#dc2626' }} onClick={() => handleDelete(bike.id)}>
+                                                <button aria-label="Poista" style={{ color: '#dc2626' }} onClick={() => handleDelete(bike.id)}>
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </div>
 
-                                        <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px' }}>{bike.brand} {bike.model}</h3>
-                                        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '16px' }}>SN: {bike.serial_number}</p>
+                                        <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px' }}>{bikeTitle(bike)}</h3>
+                                        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '16px' }}>SN: {bike.serial_number || '–'}</p>
+
+                                        {bike.status === 'varastettu' && (
+                                            <button onClick={() => setBikeStatus(bike.id, 'löytynyt')} style={{ width: '100%', marginBottom: '16px', padding: '10px', borderRadius: '10px', backgroundColor: '#000', color: '#fff', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                                <PartyPopper size={16} /> Sain pyörän takaisin
+                                            </button>
+                                        )}
+                                        {bike.status === 'rekisteröity' && (
+                                            <button onClick={() => confirm('Ilmoitetaanko pyörä varastetuksi? Ilmoitus tulee julkiseksi.') && setBikeStatus(bike.id, 'varastettu')} style={{ width: '100%', marginBottom: '16px', padding: '10px', borderRadius: '10px', backgroundColor: 'var(--secondary)', color: '#fff', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                                <AlertTriangle size={16} /> Pyöräni on varastettu
+                                            </button>
+                                        )}
 
                                         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                                                 Lisätty: {new Date(bike.created_at).toLocaleDateString('fi-FI')}
                                             </span>
-                                            <button style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary-dark)' }}>
+                                            <Link href={`/dashboard/muokkaa/${bike.id}`} style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary-dark)' }}>
                                                 Tiedot
-                                            </button>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
@@ -255,6 +289,8 @@ export default function DashboardPage() {
                         </div>
                     )}
                 </div>
+
+                {user && <MessagesPanel userId={user.id} />}
 
                 {/* ── Stories section ── */}
                 <div id="tarinat" style={{ borderTop: '2px solid var(--border)', paddingTop: '48px' }}>
