@@ -5,6 +5,7 @@ import { Search, X, Bike as BikeIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { PublicBike } from "@/lib/bikes";
 import BikeCard from "./BikeCard";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * Live, debounced search over public bike reports (`search_bikes` RPC).
@@ -14,6 +15,7 @@ import BikeCard from "./BikeCard";
  */
 export default function BikeSearch() {
     const [query, setQuery] = useState("");
+    const { t } = useI18n();
     // Results are stored together with the query they belong to, so stale
     // results are never shown for a newer query.
     const [result, setResult] = useState<{ q: string; bikes: PublicBike[] } | null>(null);
@@ -61,8 +63,8 @@ export default function BikeSearch() {
                     type="search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Etsi merkillä, mallilla, värillä, kaupungilla tai koko sarjanumerolla…"
-                    aria-label="Etsi pyöriä"
+                    placeholder={t("search.placeholder")}
+                    aria-label={t("search.aria")}
                     style={{
                         flex: 1,
                         border: 'none',
@@ -77,7 +79,7 @@ export default function BikeSearch() {
                     <button
                         type="button"
                         onClick={() => setQuery("")}
-                        aria-label="Tyhjennä haku"
+                        aria-label={t("search.clear")}
                         style={{ color: 'var(--text-muted)', background: 'transparent', padding: '4px', display: 'flex' }}
                     >
                         <X size={18} />
@@ -90,23 +92,23 @@ export default function BikeSearch() {
                 <div style={{ marginTop: '24px' }}>
                     {loading || results === null ? (
                         <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '20px' }}>
-                            Etsitään…
+                            {t("search.searching")}
                         </p>
                     ) : results.length === 0 ? (
                         <div className="card" style={{ textAlign: 'center', padding: '48px', border: '2px dashed var(--border)', background: 'transparent' }}>
                             <BikeIcon size={40} style={{ color: 'var(--border)', marginBottom: '12px' }} />
                             <p style={{ color: 'var(--text)' }}>
-                                Haulla <strong>&ldquo;{query}&rdquo;</strong> ei löytynyt pyöriä.
+                                {t("search.none", { q: query })}
                             </p>
                             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px' }}>
-                                Kokeile toista merkkiä, kaupunkia tai osaa sarjanumerosta.
+                                {t("search.noneHint")}
                             </p>
                         </div>
                     ) : (
                         <>
                             <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '16px' }}>
-                                Hakutulokset: <strong>{results.length}</strong> pyörää
-                                {results.length === 24 ? ' (ensimmäiset 24)' : ''}
+                                {t("search.results", { n: results.length })}
+                                {results.length === 24 ? t("search.first24") : ''}
                             </p>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                                 {results.map(bike => (

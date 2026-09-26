@@ -58,11 +58,14 @@ export function statusStyle(status: string | null | undefined) {
     };
 }
 
-export function formatRelativeTime(dateString: string) {
+type TimeKey = "time.justNow" | "time.hours" | "time.days";
+
+/** "2 h sitten" etc. Pass the i18n `t` function for the current language. */
+export function formatRelativeTime(dateString: string, t: (key: TimeKey, vars?: Record<string, number>) => string) {
     const diffH = Math.floor((Date.now() - new Date(dateString).getTime()) / 3_600_000);
-    if (diffH < 1) return "Juuri nyt";
-    if (diffH < 24) return `${diffH} h sitten`;
-    return `${Math.floor(diffH / 24)} pv sitten`;
+    if (diffH < 1) return t("time.justNow");
+    if (diffH < 24) return t("time.hours", { n: diffH });
+    return t("time.days", { n: Math.floor(diffH / 24) });
 }
 
 // Row shape of the public `bikes_public` view / `search_bikes` RPC.
@@ -84,7 +87,7 @@ export interface PublicBike {
     has_serial: boolean;
 }
 
-export function bikeTitle(bike: { brand?: string | null; model?: string | null }) {
+export function bikeTitle(bike: { brand?: string | null; model?: string | null }, unknown = "Tuntematon pyörä") {
     const title = [bike.brand, bike.model].filter(v => v && v !== "Unknown").join(" ");
-    return title || "Tuntematon pyörä";
+    return title || unknown;
 }

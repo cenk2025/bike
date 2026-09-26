@@ -25,7 +25,9 @@ Avaa [http://localhost:3000](http://localhost:3000) selaimessasi nähdäksesi tu
 
 - **Etusivu**: Hero-osio, tilastot, viimeksi kadonneet pyörät ja kumppanit.
 - **Varkausilmoitus**: Kolmivaiheinen lomake pyörän tietojen, sijainnin ja kuvien ilmoittamiseen.
-- **Suomen kieli**: Kaikki tekstit on lokalisoitu suomeksi.
+- **Kielet**: suomi, ruotsi ja englanti (`src/i18n/dictionaries.ts`). Kieli valitaan ylävalikosta
+  ja tallennetaan `lang`-evästeeseen; oletuksena selaimen kieli. Lakitekstit ja kumppanisivu ovat
+  toistaiseksi vain suomeksi.
 - **Premium Design**: Moderni ulkoasu, lasiefektit ja sulavat animaatiot.
 
 ## Tietokanta (Supabase)

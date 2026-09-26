@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface PublicStats {
     recovered: number;
@@ -13,10 +14,11 @@ interface PublicStats {
     users: number;
 }
 
-const fmt = (n: number | undefined) => (n === undefined ? "–" : n.toLocaleString("fi-FI"));
 
 export default function Stats() {
     const [stats, setStats] = useState<PublicStats | null>(null);
+    const { t, locale } = useI18n();
+    const fmt = (n: number | undefined) => (n === undefined ? "–" : n.toLocaleString(locale));
 
     useEffect(() => {
         supabase.rpc("public_stats").then(({ data, error }) => {
@@ -25,10 +27,10 @@ export default function Stats() {
     }, []);
 
     const tiles = [
-        { label: "PALAUTETTU OMISTAJALLE", value: fmt(stats?.recovered), color: "var(--primary)" },
-        { label: "AKTIIVISET VARKAUSILMOITUKSET", value: fmt(stats?.stolen_active), color: "var(--secondary)" },
-        { label: "LÖYTÖILMOITUKSET", value: fmt(stats?.found_reports), color: "#2979ff" },
-        { label: "AUTOMAATTISET OSUMAT", value: fmt(stats?.matches), color: "var(--text)" }
+        { label: t("stats.recovered"), value: fmt(stats?.recovered), color: "var(--primary)" },
+        { label: t("stats.stolenActive"), value: fmt(stats?.stolen_active), color: "var(--secondary)" },
+        { label: t("stats.found"), value: fmt(stats?.found_reports), color: "#2979ff" },
+        { label: t("stats.matches"), value: fmt(stats?.matches), color: "var(--text)" }
     ];
 
     return (

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Mail, Phone, Trash2, Inbox } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { bikeTitle } from "@/lib/bikes";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface MessageRow {
     id: number;
@@ -26,6 +27,7 @@ interface MessageRow {
  */
 export default function MessagesPanel({ userId, scope = "own" }: { userId: string; scope?: "own" | "admin" }) {
     const [messages, setMessages] = useState<MessageRow[]>([]);
+    const { t, locale } = useI18n();
 
     useEffect(() => {
         (async () => {
@@ -48,7 +50,7 @@ export default function MessagesPanel({ userId, scope = "own" }: { userId: strin
     };
 
     const remove = async (id: number) => {
-        if (!confirm("Poistetaanko viesti?")) return;
+        if (!confirm(t("messages.confirmDelete"))) return;
         const { error } = await supabase.from("bike_messages").delete().eq("id", id);
         if (!error) setMessages(ms => ms.filter(m => m.id !== id));
     };
@@ -59,20 +61,18 @@ export default function MessagesPanel({ userId, scope = "own" }: { userId: strin
         <section style={{ marginBottom: '60px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Inbox size={22} color="var(--primary-dark)" />
-                {scope === "own" ? "Viestit" : "Viestit nimettömille löytöilmoituksille"} ({messages.length})
+                {t(scope === "own" ? "messages.title" : "messages.titleAdmin", { n: messages.length })}
                 {unread > 0 && (
-                    <span style={{ backgroundColor: 'var(--secondary)', color: '#fff', fontSize: '12px', padding: '2px 10px', borderRadius: '20px' }}>{unread} uutta</span>
+                    <span style={{ backgroundColor: 'var(--secondary)', color: '#fff', fontSize: '12px', padding: '2px 10px', borderRadius: '20px' }}>{t("messages.new", { n: unread })}</span>
                 )}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '24px' }}>
-                {scope === "own"
-                    ? "Muiden käyttäjien viestit pyöriisi. Vastaa suoraan lähettäjän sähköpostiin tai puhelimeen."
-                    : "Välitä nämä viestit löytäjän sähköpostiin. Löytäjällä ei ole käyttäjätiliä."}
+                {t(scope === "own" ? "messages.text" : "messages.textAdmin")}
             </p>
 
             {messages.length === 0 ? (
                 <div className="card" style={{ textAlign: 'center', padding: '40px', border: '2px dashed var(--border)', background: 'transparent', color: 'var(--text-muted)' }}>
-                    Ei viestejä vielä.
+                    {t("messages.none")}
                 </div>
             ) : (
                 <div style={{ display: 'grid', gap: '16px' }}>
@@ -86,12 +86,12 @@ export default function MessagesPanel({ userId, scope = "own" }: { userId: strin
                             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginBottom: '8px', flexWrap: 'wrap' }}>
                                 <div>
                                     <span style={{ fontWeight: 700 }}>{m.sender_name}</span>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}> → {bikeTitle(m.bikes ?? {})}</span>
-                                    {!m.read_at && <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 700, color: 'var(--secondary)' }}>UUSI</span>}
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}> → {bikeTitle(m.bikes ?? {}, t("card.unknownBike"))}</span>
+                                    {!m.read_at && <span style={{ marginLeft: '8px', fontSize: '11px', fontWeight: 700, color: 'var(--secondary)' }}>{t("messages.badge")}</span>}
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{new Date(m.created_at).toLocaleString('fi-FI')}</span>
-                                    <button aria-label="Poista viesti" onClick={e => { e.stopPropagation(); remove(m.id); }} style={{ color: '#dc2626' }}>
+                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{new Date(m.created_at).toLocaleString(locale)}</span>
+                                    <button aria-label={t("messages.delete")} onClick={e => { e.stopPropagation(); remove(m.id); }} style={{ color: '#dc2626' }}>
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
@@ -108,7 +108,7 @@ export default function MessagesPanel({ userId, scope = "own" }: { userId: strin
                                 )}
                                 {scope === "admin" && (
                                     <span style={{ color: 'var(--text-muted)' }}>
-                                        Löytäjä: {m.bikes?.finder_email || "ei sähköpostia"}
+                                        {t("messages.finder", { email: m.bikes?.finder_email || t("messages.noEmail") })}
                                     </span>
                                 )}
                             </div>

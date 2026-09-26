@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import CookieConsent from "@/components/CookieConsent";
 import PwaRegister from "@/components/PwaRegister";
+import { I18nProvider } from "@/i18n/I18nProvider";
+import { getLang } from "@/i18n/server";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bike.voon.fi'),
@@ -41,17 +43,20 @@ export const viewport: Viewport = {
   themeColor: "#00e676",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getLang();
   return (
-    <html lang="fi">
+    <html lang={lang}>
       <body>
-        {children}
-        <CookieConsent />
-        <PwaRegister />
+        <I18nProvider lang={lang}>
+          {children}
+          <CookieConsent />
+          <PwaRegister />
+        </I18nProvider>
       </body>
     </html>
   );

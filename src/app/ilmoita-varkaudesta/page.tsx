@@ -9,7 +9,8 @@ import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { uploadBikeImages } from "@/lib/images";
-import { BIKE_COLORS, BIKE_TYPES, CITIES } from "@/lib/bikes";
+import { TypeSelect, ColorSelect, CityInput } from "@/components/BikeFields";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)',
@@ -48,6 +49,7 @@ export default function ReportStolen() {
     const [user, setUser] = useState<SupabaseUser | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+    const { t } = useI18n();
 
     useEffect(() => {
         const initialMode: Mode = new URLSearchParams(window.location.search).get("tila") === "rekisteroi"
@@ -96,7 +98,7 @@ export default function ReportStolen() {
         if (!user) return;
 
         if (formData.allow_contact && !formData.contact_email.trim() && !formData.contact_phone.trim()) {
-            setError("Anna joko sähköposti tai puhelinnumero ilmoituksia varten.");
+            setError(t("theft.errContact"));
             return;
         }
 
@@ -146,16 +148,16 @@ export default function ReportStolen() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
                     <Link href="/" style={{ color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <ArrowLeft size={20} />
-                        <span style={{ fontWeight: 600 }}>Takaisin</span>
+                        <span style={{ fontWeight: 600 }}>{t("common.back")}</span>
                     </Link>
-                    <h1 style={{ fontSize: '18px', fontWeight: 700 }}>{stolen ? "Ilmoita varkaus" : "Rekisteröi pyörä"}</h1>
+                    <h1 style={{ fontSize: '18px', fontWeight: 700 }}>{t(stolen ? "theft.titleStolen" : "theft.titleRegister")}</h1>
                 </div>
 
                 {/* Mode switch */}
-                <div role="radiogroup" aria-label="Ilmoituksen tyyppi" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '32px' }}>
+                <div role="radiogroup" aria-label={t("theft.modeAria")} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '32px' }}>
                     {([
-                        { value: "varastettu", icon: <AlertTriangle size={20} />, title: "Pyöräni on varastettu", text: "Julkinen ilmoitus + automaattinen haku" },
-                        { value: "rekisteröity", icon: <ShieldCheck size={20} />, title: "Rekisteröin ennakkoon", text: "Ei julkinen. Valmiina, jos pyörä katoaa" }
+                        { value: "varastettu", icon: <AlertTriangle size={20} />, title: t("theft.modeStolen"), text: t("theft.modeStolenText") },
+                        { value: "rekisteröity", icon: <ShieldCheck size={20} />, title: t("theft.modeRegister"), text: t("theft.modeRegisterText") }
                     ] as const).map(opt => (
                         <button
                             key={opt.value}
@@ -184,82 +186,77 @@ export default function ReportStolen() {
                     )}
 
                     <section style={{ marginBottom: '32px' }}>
-                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px' }}>Pyörän tiedot</h2>
+                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px' }}>{t("theft.details")}</h2>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div>
-                                <label style={labelStyle} htmlFor="serial">Sarjanumero / runkonumero (VIN) *</label>
+                                <label style={labelStyle} htmlFor="serial">{t("theft.serial")}</label>
                                 <input id="serial" type="text" value={formData.serial_number} onChange={set('serial_number')}
-                                    placeholder="esim. WTU283C0912K" required autoComplete="off" style={inputStyle} />
+                                    placeholder={t("common.egSerial")} required autoComplete="off" style={inputStyle} />
                                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
-                                    Löytyy yleensä rungon alta polkimien välistä, ostokuitista tai takuukortista.
-                                    Sarjanumeroa ei näytetä julkisesti – sitä käytetään vain automaattiseen vertailuun.
+                                    {t("theft.serialHint")}
                                 </p>
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
-                                    <label style={labelStyle} htmlFor="brand">Merkki *</label>
-                                    <input id="brand" type="text" value={formData.brand} onChange={set('brand')} placeholder="esim. Trek" required style={inputStyle} />
+                                    <label style={labelStyle} htmlFor="brand">{t("theft.brand")}</label>
+                                    <input id="brand" type="text" value={formData.brand} onChange={set('brand')} placeholder={t("common.egBrand")} required style={inputStyle} />
                                 </div>
                                 <div>
-                                    <label style={labelStyle} htmlFor="model">Malli *</label>
-                                    <input id="model" type="text" value={formData.model} onChange={set('model')} placeholder="esim. Marlin 7" required style={inputStyle} />
+                                    <label style={labelStyle} htmlFor="model">{t("theft.model")}</label>
+                                    <input id="model" type="text" value={formData.model} onChange={set('model')} placeholder={t("common.egModel")} required style={inputStyle} />
                                 </div>
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
-                                    <label style={labelStyle} htmlFor="type">Tyyppi</label>
-                                    <select id="type" value={formData.type} onChange={set('type')} required style={inputStyle}>
-                                        {BIKE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                                    </select>
+                                    <label style={labelStyle} htmlFor="type">{t("found.type")}</label>
+                                    <TypeSelect id="type" value={formData.type} onChange={set('type')} style={inputStyle} />
                                 </div>
                                 <div>
-                                    <label style={labelStyle} htmlFor="color">Väri</label>
-                                    <input id="color" list="bike-colors" value={formData.color} onChange={set('color')} placeholder="esim. musta" style={inputStyle} />
-                                    <datalist id="bike-colors">{BIKE_COLORS.map(c => <option key={c} value={c} />)}</datalist>
+                                    <label style={labelStyle} htmlFor="color">{t("found.color")}</label>
+                                    <ColorSelect id="color" value={formData.color} onChange={set('color')} style={inputStyle} />
                                 </div>
                             </div>
 
                             <div>
-                                <label style={labelStyle} htmlFor="description">Tuntomerkit</label>
+                                <label style={labelStyle} htmlFor="description">{t("theft.marks")}</label>
                                 <textarea id="description" value={formData.description} onChange={set('description')}
-                                    placeholder="Tarrat, kori, lisävarusteet, naarmut..." style={{ ...inputStyle, minHeight: '100px' }} />
+                                    placeholder={t("theft.marksPlaceholder")} style={{ ...inputStyle, minHeight: '100px' }} />
                             </div>
                         </div>
                     </section>
 
                     <section style={{ marginBottom: '32px' }}>
                         <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <MapPin size={20} /> {stolen ? "Varkauspaikka" : "Kotipaikka"}
+                            <MapPin size={20} /> {t(stolen ? "theft.placeStolen" : "theft.placeHome")}
                         </h2>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: stolen ? '1fr 1fr' : '1fr', gap: '12px' }}>
                                 <div>
-                                    <label style={labelStyle} htmlFor="city">Kaupunki *</label>
-                                    <input id="city" list="cities" value={formData.city} onChange={set('city')} required placeholder="esim. Helsinki" style={inputStyle} />
-                                    <datalist id="cities">{CITIES.map(c => <option key={c} value={c} />)}</datalist>
+                                    <label style={labelStyle} htmlFor="city">{t("found.city")}</label>
+                                    <CityInput id="city" value={formData.city} onChange={set('city')} required placeholder={t("common.egCity")} style={inputStyle} />
                                 </div>
                                 {stolen && (
                                     <div>
-                                        <label style={labelStyle} htmlFor="event_date">Varkauspäivä</label>
+                                        <label style={labelStyle} htmlFor="event_date">{t("theft.dateStolen")}</label>
                                         <input id="event_date" type="date" value={formData.event_date} max={today()} onChange={set('event_date')} style={inputStyle} />
                                     </div>
                                 )}
                             </div>
                             <div>
-                                <label style={labelStyle} htmlFor="location">{stolen ? "Osoite tai alue *" : "Alue *"}</label>
+                                <label style={labelStyle} htmlFor="location">{t(stolen ? "theft.address" : "theft.area")}</label>
                                 <input id="location" type="text" value={formData.location} onChange={set('location')} required
-                                    placeholder={stolen ? "esim. Mannerheimintie 10" : "esim. Kallio"} style={inputStyle} />
+                                    placeholder={t(stolen ? "theft.addressPlaceholder" : "theft.areaPlaceholder")} style={inputStyle} />
                             </div>
                             {stolen && (
                                 <div>
-                                    <label style={labelStyle} htmlFor="police">Rikosilmoituksen numero</label>
+                                    <label style={labelStyle} htmlFor="police">{t("theft.police")}</label>
                                     <input id="police" type="text" value={formData.police_report_number} onChange={set('police_report_number')}
                                         placeholder="esim. 5010/R/12345/26" style={inputStyle} />
                                     <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
-                                        Ei näytetä julkisesti. Vakuutusyhtiö tarvitsee sen korvaushakemukseen.
+                                        {t("theft.policeHint")}
                                     </p>
                                 </div>
                             )}
@@ -268,18 +265,18 @@ export default function ReportStolen() {
 
                     <section style={{ marginBottom: '32px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                            <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Kuvat</h2>
-                            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--primary-dark)' }}>Max 4</span>
+                            <h2 style={{ fontSize: '18px', fontWeight: 700 }}>{t("common.photos")}</h2>
+                            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--primary-dark)' }}>{t("common.max4")}</span>
                         </div>
 
                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             {images.map((url, index) => (
                                 <div key={url} style={{ position: 'relative', width: '100px', height: '100px' }}>
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={url} alt="Pyörä" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
+                                    <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
                                     <button
                                         type="button"
-                                        aria-label="Poista kuva"
+                                        aria-label={t("common.removeImage")}
                                         onClick={() => setImages(images.filter((_, i) => i !== index))}
                                         style={{ position: 'absolute', top: '-8px', right: '-8px', backgroundColor: '#ff1744', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}
                                     >
@@ -296,12 +293,12 @@ export default function ReportStolen() {
                                     style={{ width: '100px', height: '100px', border: '2px dashed var(--border)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', gap: '4px', backgroundColor: 'transparent', cursor: 'pointer' }}
                                 >
                                     <Camera size={24} />
-                                    <span style={{ fontSize: '10px', fontWeight: 700 }}>{uploading ? "LADATAAN..." : "LISÄÄ"}</span>
+                                    <span style={{ fontSize: '10px', fontWeight: 700 }}>{uploading ? t("common.uploading") : t("common.addPhoto")}</span>
                                 </button>
                             )}
                         </div>
                         <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
-                            Kuvista poistetaan automaattisesti sijaintitiedot (GPS). Kuvaa myös sarjanumero ja erikoiset tuntomerkit.
+                            {t("theft.photosHint")}
                         </p>
                         <input
                             type="file"
@@ -315,7 +312,7 @@ export default function ReportStolen() {
 
                     {/* ── Notification preferences ── */}
                     <section style={{ marginBottom: '32px' }}>
-                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>Ilmoitukset</h2>
+                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>{t("theft.notify")}</h2>
 
                         <label
                             htmlFor="allow_contact"
@@ -334,9 +331,9 @@ export default function ReportStolen() {
                                 style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: 'var(--primary-dark)' }}
                             />
                             <div>
-                                <div style={{ fontWeight: 700, fontSize: '15px' }}>Ilmoita minulle osumista ja viesteistä</div>
+                                <div style={{ fontWeight: 700, fontSize: '15px' }}>{t("theft.notifyLabel")}</div>
                                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                                    Saat tiedon, kun joku ilmoittaa löytäneensä vastaavan pyörän tai lähettää sinulle viestin.
+                                    {t("theft.notifyText")}
                                 </p>
                             </div>
                         </label>
@@ -346,24 +343,24 @@ export default function ReportStolen() {
                                 <div style={{ paddingLeft: '14px' }}>
                                     <label style={labelStyle} htmlFor="contact_email">
                                         <Mail size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
-                                        Sähköposti
+                                        {t("theft.email")}
                                     </label>
                                     <input id="contact_email" type="email" value={formData.contact_email} onChange={set('contact_email')}
-                                        placeholder="esim. etunimi@esim.fi" style={inputStyle} />
+                                        placeholder={t("common.egEmail")} style={inputStyle} />
                                 </div>
 
                                 <div style={{ paddingLeft: '14px' }}>
                                     <label style={labelStyle} htmlFor="contact_phone">
                                         <Phone size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
-                                        Puhelin
+                                        {t("theft.phone")}
                                     </label>
                                     <input id="contact_phone" type="tel" value={formData.contact_phone} onChange={set('contact_phone')}
-                                        placeholder="esim. +358 40 123 4567" style={inputStyle} />
+                                        placeholder={t("common.egPhone")} style={inputStyle} />
                                 </div>
 
                                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', paddingLeft: '14px', display: 'flex', gap: '6px' }}>
                                     <ShieldCheck size={14} style={{ flexShrink: 0 }} />
-                                    Yhteystietojasi ei näytetä julkisesti. Löytäjät lähettävät viestit CycleFoundin kautta.
+                                    {t("theft.contactPrivacy")}
                                 </p>
                             </div>
                         )}
@@ -375,18 +372,18 @@ export default function ReportStolen() {
                         className="primary-button"
                         style={{ width: '100%', padding: '18px', borderRadius: '16px', justifyContent: 'center', fontSize: '18px', marginBottom: '40px', opacity: (loading || uploading) ? 0.7 : 1 }}
                     >
-                        {loading ? "Lähetetään..." : stolen ? "Lähetä ilmoitus" : "Rekisteröi pyörä"} <Send size={20} />
+                        {loading ? t("common.sending") : t(stolen ? "theft.submitStolen" : "theft.submitRegister")} <Send size={20} />
                     </button>
 
                     {stolen && (
                         <section style={{ backgroundColor: '#e8f5e9', padding: '24px', borderRadius: '16px' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <ShieldAlert size={20} /> Tee myös nämä
+                                <ShieldAlert size={20} /> {t("theft.doAlso")}
                             </h3>
                             <ol style={{ fontSize: '14px', color: 'var(--text)', display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '20px' }}>
-                                <li>Tee rikosilmoitus osoitteessa <a href="https://poliisi.fi/rikosilmoitus" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>poliisi.fi</a> ja lisää sen numero tähän ilmoitukseen.</li>
-                                <li>Ota yhteyttä vakuutusyhtiöösi ja ilmoita sarjanumero sekä ostokuitti.</li>
-                                <li>Seuraa Tori.fi:tä ja Facebook Marketplacea – varastettuja pyöriä myydään usein pian varkauden jälkeen.</li>
+                                <li>{t("theft.step1a")} <a href="https://poliisi.fi/rikosilmoitus" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>poliisi.fi</a> {t("theft.step1b")}</li>
+                                <li>{t("theft.step2")}</li>
+                                <li>{t("theft.step3")}</li>
                             </ol>
                         </section>
                     )}

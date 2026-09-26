@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Star, Quote, BookOpen, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface Story {
     id: string;
@@ -18,6 +19,7 @@ interface Story {
 export default function StoriesPage() {
     const [stories, setStories] = useState<Story[]>([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useI18n();
 
     useEffect(() => {
         const fetchStories = async () => {
@@ -44,24 +46,24 @@ export default function StoriesPage() {
 
             <div className="container" style={{ padding: '60px 24px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                    <h1 style={{ fontSize: '48px', fontWeight: 800, marginBottom: '16px' }}>Menestystarinat</h1>
+                    <h1 style={{ fontSize: '48px', fontWeight: 800, marginBottom: '16px' }}>{t("stories.title")}</h1>
                     <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '0 auto' }}>
-                        Nämä tarinat motivoivat meitä jatkamaan työtämme. Yhteisön voima on valtava!
+                        {t("stories.intro")}
                     </p>
                 </div>
 
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-muted)', fontSize: '18px' }}>
-                        Ladataan tarinoita...
+                        {t("stories.loading")}
                     </div>
                 ) : stories.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '80px' }}>
                         <BookOpen size={56} style={{ color: 'var(--border)', marginBottom: '16px' }} />
                         <p style={{ color: 'var(--text-muted)', fontSize: '18px', marginBottom: '24px' }}>
-                            Ei vielä tarinoita. Ole ensimmäinen!
+                            {t("stories.empty")}
                         </p>
                         <Link href="/dashboard#tarinat" className="primary-button" style={{ borderRadius: '12px', display: 'inline-flex' }}>
-                            Jaa tarinasi <ArrowRight size={20} />
+                            {t("stories.share")} <ArrowRight size={20} />
                         </Link>
                     </div>
                 ) : (
@@ -97,10 +99,10 @@ export default function StoriesPage() {
 
                 {/* CTA */}
                 <div style={{ marginTop: '80px', backgroundColor: 'var(--primary)', padding: '60px', borderRadius: '24px', textAlign: 'center', color: '#000' }}>
-                    <h2 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '16px' }}>Onko sinulla oma tarina?</h2>
-                    <p style={{ marginBottom: '32px' }}>Haluamme kuulla miten sait pyöräsi takaisin!</p>
+                    <h2 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '16px' }}>{t("stories.ctaTitle")}</h2>
+                    <p style={{ marginBottom: '32px' }}>{t("stories.ctaText")}</p>
                     <Link href="/dashboard#tarinat" className="primary-button" style={{ backgroundColor: '#000', color: '#fff', display: 'inline-flex', borderRadius: '12px' }}>
-                        Jaa tarinasi <ArrowRight size={20} />
+                        {t("stories.share")} <ArrowRight size={20} />
                     </Link>
                 </div>
             </div>

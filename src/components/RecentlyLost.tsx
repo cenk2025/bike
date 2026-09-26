@@ -6,17 +6,20 @@ import Link from "next/link";
 import BikeCard from "./BikeCard";
 import { supabase } from "@/lib/supabase";
 import type { PublicBike } from "@/lib/bikes";
+import { useI18n } from "@/i18n/I18nProvider";
+import type { DictKey } from "@/i18n/dictionaries";
 
-const TABS: { label: string; match: (b: PublicBike) => boolean }[] = [
-    { label: "Kaikki", match: () => true },
-    { label: "Varastetut", match: b => b.status === "varastettu" },
-    { label: "Löydetyt", match: b => b.status === "ilmoitettu" },
-    { label: "Sähkö", match: b => b.type === "Sähkö" || b.type === "Sähköpotkulauta" },
-    { label: "Moottoripyörät", match: b => b.type === "Moottoripyörä" || b.type === "Mopo" }
+const TABS: { label: DictKey; match: (b: PublicBike) => boolean }[] = [
+    { label: "recent.all", match: () => true },
+    { label: "recent.stolen", match: b => b.status === "varastettu" },
+    { label: "recent.found", match: b => b.status === "ilmoitettu" },
+    { label: "recent.electric", match: b => b.type === "Sähkö" || b.type === "Sähköpotkulauta" },
+    { label: "recent.motor", match: b => b.type === "Moottoripyörä" || b.type === "Mopo" }
 ];
 
 export default function RecentlyLost() {
-    const [activeTab, setActiveTab] = useState("Kaikki");
+    const [activeTab, setActiveTab] = useState<DictKey>("recent.all");
+    const { t } = useI18n();
     const [bikes, setBikes] = useState<PublicBike[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -42,8 +45,8 @@ export default function RecentlyLost() {
     return (
         <section className="container" style={{ margin: '60px auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
-                <h2 className="section-title" style={{ marginBottom: 0 }}>Viimeisimmät ilmoitukset</h2>
-                <Link href="/kartta" style={{ color: 'var(--primary-dark)', fontWeight: 600, whiteSpace: 'nowrap' }}>Näytä kartalla →</Link>
+                <h2 className="section-title" style={{ marginBottom: 0 }}>{t("recent.title")}</h2>
+                <Link href="/kartta" style={{ color: 'var(--primary-dark)', fontWeight: 600, whiteSpace: 'nowrap' }}>{t("recent.showMap")}</Link>
             </div>
 
             <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', overflowX: 'auto', paddingBottom: '8px' }}>
@@ -61,7 +64,7 @@ export default function RecentlyLost() {
                             whiteSpace: 'nowrap'
                         }}
                     >
-                        {label}
+                        {t(label)}
                     </button>
                 ))}
             </div>
@@ -69,7 +72,7 @@ export default function RecentlyLost() {
             {visible.length === 0 ? (
                 <div className="card" style={{ textAlign: 'center', padding: '48px', border: '2px dashed var(--border)', background: 'transparent' }}>
                     <BikeIcon size={40} style={{ color: 'var(--border)', marginBottom: '12px' }} />
-                    <p style={{ color: 'var(--text-muted)' }}>Ei ilmoituksia tässä kategoriassa.</p>
+                    <p style={{ color: 'var(--text-muted)' }}>{t("recent.empty")}</p>
                 </div>
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>

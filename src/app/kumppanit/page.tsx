@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Stats from "@/components/Stats";
+import FinnishOnlyNote from "@/components/FinnishOnlyNote";
 import { ShieldCheck, Building2, Store, Home, Siren, ArrowRight, Search, Sparkles, MessageSquare } from "lucide-react";
 import { SITE } from "@/lib/site";
 
@@ -87,6 +88,7 @@ export default function PartnersPage() {
             </section>
 
             <div className="container" style={{ padding: '20px 24px 0' }}>
+                <div style={{ marginTop: '20px' }}><FinnishOnlyNote /></div>
                 <Stats />
             </div>
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
@@ -21,6 +22,7 @@ type State = "unsupported" | "loading" | "off" | "on" | "denied";
 export default function PushToggle() {
     const [state, setState] = useState<State>("loading");
     const [busy, setBusy] = useState(false);
+    const { t } = useI18n();
 
     useEffect(() => {
         (async () => {
@@ -84,11 +86,9 @@ export default function PushToggle() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 {state === "on" ? <Bell size={20} color="var(--primary-dark)" /> : <BellOff size={20} color="var(--text-muted)" />}
                 <div>
-                    <p style={{ fontWeight: 700 }}>Ilmoitukset tällä laitteella</p>
+                    <p style={{ fontWeight: 700 }}>{t("push.title")}</p>
                     <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                        {state === "denied"
-                            ? "Estit ilmoitukset selaimen asetuksista. Salli ne sieltä ottaaksesi ne käyttöön."
-                            : "Saat heti tiedon uusista osumista ja viesteistä. iPhonessa lisää ensin CycleFound kotivalikkoon."}
+                        {t(state === "denied" ? "push.denied" : "push.text")}
                     </p>
                 </div>
             </div>
@@ -101,7 +101,7 @@ export default function PushToggle() {
                         ? { padding: '10px 16px', borderRadius: '10px', border: '1px solid var(--border)', backgroundColor: '#fff', fontWeight: 600 }
                         : { padding: '10px 16px' }}
                 >
-                    {state === "on" ? "Poista käytöstä" : "Ota käyttöön"}
+                    {t(state === "on" ? "push.disable" : "push.enable")}
                 </button>
             )}
         </div>

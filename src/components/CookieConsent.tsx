@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Cookie, X, Check } from "lucide-react";
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function CookieConsent() {
     const [isVisible, setIsVisible] = useState(false);
+    const { t } = useI18n();
 
     useEffect(() => {
         // The footer's "Evästeasetukset" link re-opens the banner.
@@ -65,11 +67,10 @@ export default function CookieConsent() {
                         <Cookie size={24} />
                     </div>
                     <div style={{ flex: 1 }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '8px' }}>Evästeasetukset</h3>
+                        <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '8px' }}>{t("cookie.title")}</h3>
                         <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                            Käytämme vain välttämättömiä evästeitä ja selaimen tallennustilaa (kirjautuminen, kielivalinta).
-                            Emme käytä analytiikka- tai mainosevästeitä. Jos otamme niitä käyttöön, ne vaativat hyväksyntäsi.
-                            Lue lisää <a href="/tietosuoja#evasteet" style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>tietosuojaselosteesta</a>.
+                            {t("cookie.text")}{" "}
+                            <a href="/tietosuoja#evasteet" style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>{t("cookie.readMore")}</a>.
                         </p>
                     </div>
                     <button
@@ -98,7 +99,7 @@ export default function CookieConsent() {
                             cursor: 'pointer'
                         }}
                     >
-                        Vain välttämättömät
+                        {t("cookie.essential")}
                     </button>
                     <button
                         onClick={handleAccept}
@@ -109,7 +110,7 @@ export default function CookieConsent() {
                             fontSize: '14px'
                         }}
                     >
-                        Hyväksy kaikki <Check size={18} />
+                        {t("cookie.acceptAll")} <Check size={18} />
                     </button>
                 </div>
             </div>

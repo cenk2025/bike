@@ -7,7 +7,8 @@ import { ArrowLeft, MapPin, Camera, Send, CheckCircle2, X, AlertCircle, Scale, H
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { uploadBikeImages } from "@/lib/images";
-import { BIKE_COLORS, BIKE_TYPES, CITIES } from "@/lib/bikes";
+import { TypeSelect, ColorSelect, CityInput } from "@/components/BikeFields";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)',
@@ -41,6 +42,7 @@ export default function FoundBike() {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { t } = useI18n();
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data: { user } }) => {
@@ -98,7 +100,7 @@ export default function FoundBike() {
 
         setLoading(false);
         if (error) {
-            setError("Ilmoituksen tallennus epäonnistui: " + error.message);
+            setError(t("found.saveError", { error: error.message }));
         } else {
             setSuccess(true);
         }
@@ -113,15 +115,13 @@ export default function FoundBike() {
                         <div style={{ backgroundColor: 'var(--primary)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                             <CheckCircle2 size={32} color="#000" />
                         </div>
-                        <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '16px' }}>Kiitos ilmoituksestasi!</h1>
+                        <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '16px' }}>{t("found.thanksTitle")}</h1>
                         <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '24px' }}>
-                            Vertasimme pyörää heti kaikkiin varkaus- ja rekisteröintitietoihin. Jos se vastaa jonkun
-                            ilmoitusta, omistaja saa ilmoituksen ja voi ottaa sinuun yhteyttä CycleFoundin kautta.
-                            Sähköpostiosoitettasi ei näytetä kenellekään.
+                            {t("found.thanksText")}
                         </p>
                         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                            <Link href="/" className="primary-button">Etusivulle</Link>
-                            {userId && <Link href="/dashboard" className="secondary-button">Omat ilmoitukset</Link>}
+                            <Link href="/" className="primary-button">{t("common.toHome")}</Link>
+                            {userId && <Link href="/dashboard" className="secondary-button">{t("found.myReports")}</Link>}
                         </div>
                     </div>
                 </div>
@@ -138,14 +138,13 @@ export default function FoundBike() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
                     <Link href="/" style={{ color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <ArrowLeft size={20} />
-                        <span style={{ fontWeight: 600 }}>Takaisin</span>
+                        <span style={{ fontWeight: 600 }}>{t("common.back")}</span>
                     </Link>
-                    <h1 style={{ fontSize: '18px', fontWeight: 700 }}>Löysin pyörän</h1>
+                    <h1 style={{ fontSize: '18px', fontWeight: 700 }}>{t("found.title")}</h1>
                 </div>
 
                 <p style={{ color: 'var(--text-muted)', marginBottom: '32px', lineHeight: 1.6 }}>
-                    Ilmoitus vertautuu automaattisesti varastettuihin ja rekisteröityihin pyöriin. Mitä enemmän
-                    tietoja annat, sitä varmemmin omistaja löytyy. Et tarvitse käyttäjätiliä.
+                    {t("found.intro")}
                 </p>
 
                 <form onSubmit={handleSubmit} className="card" style={{ padding: '0', border: 'none', background: 'transparent' }}>
@@ -156,43 +155,40 @@ export default function FoundBike() {
                     )}
 
                     <section style={{ marginBottom: '32px' }}>
-                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px' }}>Pyörän tiedot</h2>
+                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px' }}>{t("found.details")}</h2>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div>
-                                <label style={labelStyle} htmlFor="serial"><Hash size={12} style={{ display: 'inline', verticalAlign: 'middle' }} /> Sarjanumero / runkonumero</label>
+                                <label style={labelStyle} htmlFor="serial"><Hash size={12} style={{ display: 'inline', verticalAlign: 'middle' }} /> {t("found.serial")}</label>
                                 <input id="serial" type="text" value={formData.serial_number} onChange={set('serial_number')}
-                                    placeholder="esim. WTU283C0912K" style={inputStyle} autoComplete="off" />
+                                    placeholder={t("common.egSerial")} style={inputStyle} autoComplete="off" />
                                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
-                                    Tärkein tunniste! Löytyy yleensä rungon alta polkimien välistä. Sarjanumeroa ei näytetä julkisesti.
+                                    {t("found.serialHint")}
                                 </p>
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
-                                    <label style={labelStyle} htmlFor="brand">Merkki</label>
-                                    <input id="brand" type="text" value={formData.brand} onChange={set('brand')} placeholder="esim. Helkama" style={inputStyle} />
+                                    <label style={labelStyle} htmlFor="brand">{t("found.brand")}</label>
+                                    <input id="brand" type="text" value={formData.brand} onChange={set('brand')} placeholder={t("common.egBrand")} style={inputStyle} />
                                 </div>
                                 <div>
-                                    <label style={labelStyle} htmlFor="model">Malli</label>
-                                    <input id="model" type="text" value={formData.model} onChange={set('model')} placeholder="esim. Jopo" style={inputStyle} />
+                                    <label style={labelStyle} htmlFor="model">{t("found.model")}</label>
+                                    <input id="model" type="text" value={formData.model} onChange={set('model')} placeholder={t("common.egModel")} style={inputStyle} />
                                 </div>
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
-                                    <label style={labelStyle} htmlFor="type">Tyyppi</label>
-                                    <select id="type" value={formData.type} onChange={set('type')} style={inputStyle}>
-                                        {BIKE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                                    </select>
+                                    <label style={labelStyle} htmlFor="type">{t("found.type")}</label>
+                                    <TypeSelect id="type" value={formData.type} onChange={set('type')} style={inputStyle} />
                                 </div>
                                 <div>
-                                    <label style={labelStyle} htmlFor="color">Väri</label>
-                                    <input id="color" list="bike-colors" value={formData.color} onChange={set('color')} placeholder="esim. musta" style={inputStyle} />
-                                    <datalist id="bike-colors">{BIKE_COLORS.map(c => <option key={c} value={c} />)}</datalist>
+                                    <label style={labelStyle} htmlFor="color">{t("found.color")}</label>
+                                    <ColorSelect id="color" value={formData.color} onChange={set('color')} style={inputStyle} />
                                 </div>
                             </div>
                             <div>
-                                <label style={labelStyle} htmlFor="description">Kuvaus ja tuntomerkit</label>
+                                <label style={labelStyle} htmlFor="description">{t("found.description")}</label>
                                 <textarea id="description" value={formData.description} onChange={set('description')}
-                                    placeholder="Tarrat, kori, lukko, vauriot..."
+                                    placeholder={t("found.descPlaceholder")}
                                     style={{ ...inputStyle, minHeight: '100px' }} />
                             </div>
                         </div>
@@ -200,39 +196,38 @@ export default function FoundBike() {
 
                     <section style={{ marginBottom: '32px' }}>
                         <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <MapPin size={20} /> Löytöpaikka
+                            <MapPin size={20} /> {t("found.place")}
                         </h2>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
-                                    <label style={labelStyle} htmlFor="city">Kaupunki *</label>
-                                    <input id="city" list="cities" value={formData.city} onChange={set('city')} required placeholder="esim. Helsinki" style={inputStyle} />
-                                    <datalist id="cities">{CITIES.map(c => <option key={c} value={c} />)}</datalist>
+                                    <label style={labelStyle} htmlFor="city">{t("found.city")}</label>
+                                    <CityInput id="city" value={formData.city} onChange={set('city')} required placeholder={t("common.egCity")} style={inputStyle} />
                                 </div>
                                 <div>
-                                    <label style={labelStyle} htmlFor="event_date">Löytöpäivä</label>
+                                    <label style={labelStyle} htmlFor="event_date">{t("found.date")}</label>
                                     <input id="event_date" type="date" value={formData.event_date} max={today()} onChange={set('event_date')} style={inputStyle} />
                                 </div>
                             </div>
                             <div>
-                                <label style={labelStyle} htmlFor="location">Paikka *</label>
+                                <label style={labelStyle} htmlFor="location">{t("found.location")}</label>
                                 <input id="location" type="text" value={formData.location} onChange={set('location')} required
-                                    placeholder="esim. Rautatientori" style={inputStyle} />
+                                    placeholder={t("found.locationPlaceholder")} style={inputStyle} />
                             </div>
                         </div>
                     </section>
 
                     <section style={{ marginBottom: '32px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                            <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Kuvat</h2>
-                            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--primary-dark)' }}>Max 4</span>
+                            <h2 style={{ fontSize: '18px', fontWeight: 700 }}>{t("common.photos")}</h2>
+                            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--primary-dark)' }}>{t("common.max4")}</span>
                         </div>
                         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             {images.map((url, index) => (
                                 <div key={url} style={{ position: 'relative', width: '100px', height: '100px' }}>
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={url} alt="Löydetty pyörä" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
-                                    <button type="button" aria-label="Poista kuva" onClick={() => setImages(images.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '-8px', right: '-8px', backgroundColor: '#ff1744', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                                    <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
+                                    <button type="button" aria-label={t("common.removeImage")} onClick={() => setImages(images.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '-8px', right: '-8px', backgroundColor: '#ff1744', color: '#fff', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
                                         <X size={14} />
                                     </button>
                                 </div>
@@ -240,23 +235,23 @@ export default function FoundBike() {
                             {images.length < 4 && (
                                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} style={{ width: '100px', height: '100px', border: '2px dashed var(--border)', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', gap: '4px', background: 'transparent', cursor: 'pointer' }}>
                                     <Camera size={24} />
-                                    <span style={{ fontSize: '10px', fontWeight: 700 }}>{uploading ? "LADATAAN..." : "LISÄÄ"}</span>
+                                    <span style={{ fontSize: '10px', fontWeight: 700 }}>{uploading ? t("common.uploading") : t("common.addPhoto")}</span>
                                 </button>
                             )}
                         </div>
                         <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
-                            Kuvista poistetaan automaattisesti sijaintitiedot (GPS) ennen tallennusta.
+                            {t("common.gpsStripped")}
                         </p>
                         <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" multiple style={{ display: 'none' }} />
                     </section>
 
                     <section style={{ marginBottom: '32px' }}>
-                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>Yhteystietosi</h2>
-                        <label style={labelStyle} htmlFor="finder_email">Sähköposti (suositeltu)</label>
+                        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>{t("found.contact")}</h2>
+                        <label style={labelStyle} htmlFor="finder_email">{t("found.email")}</label>
                         <input id="finder_email" type="email" value={formData.finder_email} onChange={set('finder_email')}
-                            placeholder="esim. etunimi@esim.fi" style={inputStyle} />
+                            placeholder={t("common.egEmail")} style={inputStyle} />
                         <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
-                            Ei näytetä julkisesti. Käytämme sitä vain välittääksemme omistajan viestin sinulle.
+                            {t("found.emailHint")}
                         </p>
                         {/* Honeypot – hidden from people, bots fill it. */}
                         <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"
@@ -265,17 +260,17 @@ export default function FoundBike() {
                     </section>
 
                     <button type="submit" disabled={loading || uploading} className="primary-button" style={{ width: '100%', padding: '18px', borderRadius: '16px', justifyContent: 'center', fontSize: '18px', marginBottom: '32px', opacity: (loading || uploading) ? 0.7 : 1 }}>
-                        {loading ? "Lähetetään..." : "Ilmoita löydöstä"} <Send size={20} />
+                        {loading ? t("common.sending") : t("found.submit")} <Send size={20} />
                     </button>
 
                     <section style={{ backgroundColor: '#e8f5e9', padding: '24px', borderRadius: '16px', marginBottom: '40px' }}>
                         <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Scale size={20} /> Hyvä tietää
+                            <Scale size={20} /> {t("found.goodToKnow")}
                         </h3>
                         <ul style={{ fontSize: '14px', display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '20px', lineHeight: 1.5 }}>
-                            <li>Löytötavaralain mukaan löydöstä on ilmoitettava omistajalle tai poliisille. CycleFound auttaa löytämään omistajan, mutta ei korvaa ilmoitusta poliisille.</li>
-                            <li>Älä luovuta pyörää ilman todistetta omistajuudesta (kuitti, sarjanumero, vanhat kuvat). Tapaa julkisella paikalla.</li>
-                            <li>Jos epäilet pyörän olevan varastettu ja näet epäilyttävää toimintaa, soita 112.</li>
+                            <li>{t("found.law1")}</li>
+                            <li>{t("found.law2")}</li>
+                            <li>{t("found.law3")}</li>
                         </ul>
                     </section>
                 </form>

@@ -7,7 +7,7 @@ import { ArrowLeft, Save, AlertCircle, Camera, X, Trash2, Image as ImageIcon, Ma
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { uploadBikeImages } from "@/lib/images";
-import { BIKE_COLORS, BIKE_TYPES, CITIES } from "@/lib/bikes";
+import { TypeSelect, ColorSelect, CityInput } from "@/components/BikeFields";
 import { useRouter } from "next/navigation";
 
 export default function EditBikePage({ params }: { params: Promise<{ id: string }> }) {
@@ -318,10 +318,7 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
 
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Tyyppi</label>
-                            <select name="type" value={formData.type} onChange={handleChange}
-                                style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px', backgroundColor: '#fff' }}>
-                                {BIKE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                            </select>
+                            <TypeSelect value={formData.type} onChange={handleChange} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px', backgroundColor: '#fff' }} />
                         </div>
 
                         <div>
@@ -333,15 +330,13 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
 
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Kaupunki</label>
-                            <input type="text" name="city" list="cities" value={formData.city} onChange={handleChange} placeholder="esim. Helsinki" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
+                            <CityInput id="city" value={formData.city} onChange={handleChange} placeholder="esim. Helsinki" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
                         </div>
-                        <datalist id="cities">{CITIES.map(c => <option key={c} value={c} />)}</datalist>
 
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Väri</label>
-                            <input type="text" name="color" list="bike-colors" value={formData.color} onChange={handleChange} placeholder="esim. musta" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }} />
+                            <ColorSelect value={formData.color} onChange={handleChange} style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px', backgroundColor: '#fff' }} />
                         </div>
-                        <datalist id="bike-colors">{BIKE_COLORS.map(c => <option key={c} value={c} />)}</datalist>
 
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Tapahtumapäivä (varkaus / löytö)</label>

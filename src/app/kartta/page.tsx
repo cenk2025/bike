@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import BikeCard from "@/components/BikeCard";
 import { supabase } from "@/lib/supabase";
 import { cityCoords, type PublicBike } from "@/lib/bikes";
+import { useI18n } from "@/i18n/I18nProvider";
 
 type Filter = "kaikki" | "varastettu" | "ilmoitettu";
 
@@ -32,6 +33,7 @@ export default function MapPage() {
     const mapRef = useRef<LeafletMap | null>(null);
     const layerRef = useRef<LayerGroup | null>(null);
     const [mapReady, setMapReady] = useState(false);
+    const { t } = useI18n();
 
     useEffect(() => {
         supabase
@@ -101,12 +103,12 @@ export default function MapPage() {
                     fillColor: color,
                     fillOpacity: 0.85
                 })
-                    .bindTooltip(`<strong>${g.city}</strong><br>${g.stolen.length} varastettu · ${g.found.length} löydetty`)
+                    .bindTooltip(`<strong>${g.city}</strong><br>${t("map.tooltip", { stolen: g.stolen.length, found: g.found.length })}`)
                     .on("click", () => setSelected(g.city.toLowerCase()))
                     .addTo(layer);
             }
         })();
-    }, [groups, mapReady]);
+    }, [groups, mapReady, t]);
 
     const selectedGroup = groups.find(g => g.city.toLowerCase() === selected);
     const selectedBikes = selectedGroup ? [...selectedGroup.stolen, ...selectedGroup.found] : [];
@@ -115,13 +117,13 @@ export default function MapPage() {
         <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
             <Header />
             <div className="container" style={{ padding: '40px 24px 60px' }}>
-                <h1 style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 800, marginBottom: '8px' }}>Ilmoitukset kartalla</h1>
+                <h1 style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 800, marginBottom: '8px' }}>{t("map.title")}</h1>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-                    Aktiiviset varkaus- ja löytöilmoitukset kaupungeittain. Napsauta palloa nähdäksesi pyörät.
+                    {t("map.intro")}
                 </p>
 
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
-                    {([["kaikki", "Kaikki"], ["varastettu", "Varastetut"], ["ilmoitettu", "Löydetyt"]] as const).map(([value, label]) => (
+                    {([["kaikki", "recent.all"], ["varastettu", "recent.stolen"], ["ilmoitettu", "recent.found"]] as const).map(([value, label]) => (
                         <button
                             key={value}
                             onClick={() => setFilter(value)}
@@ -131,7 +133,7 @@ export default function MapPage() {
                                 border: filter === value ? 'none' : '1px solid var(--border)'
                             }}
                         >
-                            {label}
+                            {t(label)}
                         </button>
                     ))}
                 </div>
@@ -139,9 +141,9 @@ export default function MapPage() {
                 <div ref={mapEl} style={{ height: 'min(70vh, 560px)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)', zIndex: 0, position: 'relative' }} />
 
                 <div style={{ display: 'flex', gap: '20px', marginTop: '12px', fontSize: '13px', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
-                    <span><span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ff1744', marginRight: '6px' }} />Enimmäkseen varastettuja</span>
-                    <span><span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#00c853', marginRight: '6px' }} />Enimmäkseen löydettyjä</span>
-                    {unlocated > 0 && <span>{unlocated} ilmoitusta ilman tunnettua kaupunkia</span>}
+                    <span><span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ff1744', marginRight: '6px' }} />{t("map.legendStolen")}</span>
+                    <span><span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#00c853', marginRight: '6px' }} />{t("map.legendFound")}</span>
+                    {unlocated > 0 && <span>{t("map.unlocated", { n: unlocated })}</span>}
                 </div>
 
                 {selectedGroup && (

@@ -2,8 +2,10 @@
 
 import { AlertTriangle, Search } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function Hero() {
+    const { t } = useI18n();
     return (
         <section style={{
             padding: '60px 0',
@@ -20,10 +22,10 @@ export default function Hero() {
         }}>
             <div className="container" style={{ maxWidth: '800px' }}>
                 <h1 style={{ fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 800, marginBottom: '16px', lineHeight: 1.1 }}>
-                    Pelasta pyöräsi. Suojaa kaupunkisi.
+                    {t("hero.title")}
                 </h1>
                 <p style={{ fontSize: '18px', marginBottom: '40px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>
-                    Yhteisöpohjainen verkosto kadonneiden ja varastettujen polkupyörien löytämiseksi.
+                    {t("hero.subtitle")}
                 </p>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', width: '100%' }}>
@@ -36,7 +38,7 @@ export default function Hero() {
                         backgroundColor: 'var(--secondary)'
                     }}>
                         <AlertTriangle size={32} />
-                        Ilmoita varkaus
+                        {t("hero.reportTheft")}
                     </Link>
 
                     <Link href="/loydetyt" className="primary-button" style={{
@@ -48,16 +50,16 @@ export default function Hero() {
                         backgroundColor: 'var(--primary)'
                     }}>
                         <Search size={32} />
-                        Löysitkö pyörän?
+                        {t("hero.foundBike")}
                     </Link>
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px 28px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '28px', fontSize: '15px' }}>
                     <Link href="/ilmoita-varkaudesta?tila=rekisteroi" style={{ color: '#fff', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '4px' }}>
-                        Rekisteröi pyöräsi ennakkoon →
+                        {t("hero.register")}
                     </Link>
                     <Link href="/tarkista" style={{ color: '#fff', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '4px' }}>
-                        Ostamassa käytettyä? Tarkista sarjanumero →
+                        {t("hero.check")}
                     </Link>
                 </div>
             </div>

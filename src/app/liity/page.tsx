@@ -7,6 +7,7 @@ import { UserPlus, Mail, Lock, User, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function JoinPage() {
     const [email, setEmail] = useState("");
@@ -16,6 +17,7 @@ export default function JoinPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
+    const { t } = useI18n();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,16 +53,16 @@ export default function JoinPage() {
 
             <div className="container" style={{ maxWidth: '450px', padding: '80px 24px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '8px' }}>Liity yhteisöön</h1>
-                    <p style={{ color: 'var(--text-muted)' }}>Auta meitä tekemään kaupungista turvallisempi pyöräilijöille.</p>
+                    <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '8px' }}>{t("signup.title")}</h1>
+                    <p style={{ color: 'var(--text-muted)' }}>{t("signup.subtitle")}</p>
                 </div>
 
                 <div className="card" style={{ padding: '32px' }}>
                     {success ? (
                         <div style={{ textAlign: 'center', padding: '20px' }}>
                             <div style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '20px', borderRadius: '16px', marginBottom: '20px' }}>
-                                <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Rekisteröinti onnistui!</h2>
-                                <p>Tarkista sähköpostisi vahvistaaksesi tilisi. Sinut ohjataan kirjautumissivulle hetken kuluttua.</p>
+                                <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>{t("signup.successTitle")}</h2>
+                                <p>{t("signup.successText")}</p>
                             </div>
                         </div>
                     ) : (
@@ -73,14 +75,14 @@ export default function JoinPage() {
                             )}
 
                             <div>
-                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Nimi</label>
+                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>{t("signup.name")}</label>
                                 <div style={{ position: 'relative' }}>
                                     <User size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        placeholder="Matti Meikäläinen"
+                                        placeholder={t("signup.namePlaceholder")}
                                         required
                                         style={{ width: '100%', padding: '16px 16px 16px 48px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }}
                                     />
@@ -88,14 +90,14 @@ export default function JoinPage() {
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Sähköposti</label>
+                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>{t("auth.email")}</label>
                                 <div style={{ position: 'relative' }}>
                                     <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                                     <input
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="sinun@sahkoposti.fi"
+                                        placeholder={t("auth.emailPlaceholder")}
                                         required
                                         style={{ width: '100%', padding: '16px 16px 16px 48px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '16px' }}
                                     />
@@ -103,7 +105,7 @@ export default function JoinPage() {
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Salasana</label>
+                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>{t("auth.password")}</label>
                                 <div style={{ position: 'relative' }}>
                                     <Lock size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                                     <input
@@ -124,14 +126,17 @@ export default function JoinPage() {
                                 className="primary-button"
                                 style={{ width: '100%', justifyContent: 'center', padding: '16px', borderRadius: '12px', opacity: loading ? 0.7 : 1 }}
                             >
-                                {loading ? "Luodaan tiliä..." : "Luo tili"} <UserPlus size={20} />
+                                {loading ? t("signup.submitting") : t("signup.submit")} <UserPlus size={20} />
                             </button>
+                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.5 }}>
+                                <Link href="/kayttoehdot" style={{ color: 'inherit', textDecoration: 'underline' }}>{t("signup.terms")}</Link>
+                            </p>
                         </form>
                     )}
                 </div>
 
                 <p style={{ textAlign: 'center', marginTop: '32px', fontSize: '14px', color: 'var(--text-muted)' }}>
-                    Onko sinulla jo tili? <Link href="/kirjaudu" style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>Kirjaudu tästä</Link>
+                    {t("signup.haveAccount")} <Link href="/kirjaudu" style={{ color: 'var(--primary-dark)', fontWeight: 700 }}>{t("signup.login")}</Link>
                 </p>
             </div>
 
