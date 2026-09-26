@@ -104,6 +104,12 @@ end $$;
 
 alter table public.bikes alter column serial_number drop not null;
 alter table public.bikes alter column user_id drop not null;
+-- A finder rarely knows the model (or even the brand) of a found bike.
+alter table public.bikes alter column brand drop not null;
+alter table public.bikes alter column model drop not null;
+alter table public.bikes alter column type drop not null;
+alter table public.bikes alter column location drop not null;
+alter table public.bikes alter column image_url drop not null;
 
 alter table public.bikes
     add column if not exists description          text,
