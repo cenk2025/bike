@@ -164,3 +164,30 @@ ul {
 .mobile-nav-active {
   animation: slideDown 0.3s ease forwards;
 }
+/* Long-form text pages (privacy policy, terms, help) */
+.content-page h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 40px 0 12px;
+}
+.content-page h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 24px 0 8px;
+}
+.content-page p,
+.content-page li {
+  font-size: 16px;
+  line-height: 1.7;
+}
+.content-page p {
+  margin-bottom: 12px;
+}
+.content-page ul {
+  padding-left: 22px;
+  margin-bottom: 12px;
+}
+.content-page a {
+  color: var(--primary-dark);
+  font-weight: 600;
+}

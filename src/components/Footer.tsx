@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Bike, Instagram, Twitter, Facebook } from "lucide-react";
+import { Bike } from "lucide-react";
+import CookieSettingsLink from "./CookieSettingsLink";
+import { SITE } from "@/lib/site";
 
 export default function Footer() {
     return (
@@ -14,7 +16,7 @@ export default function Footer() {
                             CycleFound
                         </div>
                         <p style={{ color: '#aaa', fontSize: '14px', lineHeight: 1.6 }}>
-                            Autamme pyörän omistajia teknologian ja yhteisön avulla koko Euroopassa.
+                            Autamme pyörän omistajia teknologian ja yhteisön avulla – ensin Suomessa, sitten koko Pohjolassa.
                         </p>
                     </div>
 
@@ -32,18 +34,19 @@ export default function Footer() {
                     <div>
                         <h4 style={{ marginBottom: '20px', fontSize: '18px' }}>Tuki</h4>
                         <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <li><Link href="#" style={{ color: '#aaa', fontSize: '14px' }}>Ohjekeskus</Link></li>
-                            <li><Link href="#" style={{ color: '#aaa', fontSize: '14px' }}>Ota yhteyttä</Link></li>
-                            <li><Link href="#" style={{ color: '#aaa', fontSize: '14px' }}>Turvavinkit</Link></li>
+                            <li><Link href="/ohjeet" style={{ color: '#aaa', fontSize: '14px' }}>Ohjeet</Link></li>
+                            <li><Link href="/ohjeet#turvavinkit" style={{ color: '#aaa', fontSize: '14px' }}>Turvavinkit</Link></li>
+                            <li><Link href="/kumppanit" style={{ color: '#aaa', fontSize: '14px' }}>Kumppaneille</Link></li>
+                            <li><a href={`mailto:${SITE.email}`} style={{ color: '#aaa', fontSize: '14px' }}>Ota yhteyttä</a></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 style={{ marginBottom: '20px', fontSize: '18px' }}>Laillinen</h4>
                         <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <li><Link href="#" style={{ color: '#aaa', fontSize: '14px' }}>Tietosuojaseloste</Link></li>
-                            <li><Link href="#" style={{ color: '#aaa', fontSize: '14px' }}>Käyttöehdot</Link></li>
-                            <li><Link href="#" style={{ color: '#aaa', fontSize: '14px' }}>Evästeasetukset</Link></li>
+                            <li><Link href="/tietosuoja" style={{ color: '#aaa', fontSize: '14px' }}>Tietosuojaseloste</Link></li>
+                            <li><Link href="/kayttoehdot" style={{ color: '#aaa', fontSize: '14px' }}>Käyttöehdot</Link></li>
+                            <li><CookieSettingsLink style={{ color: '#aaa', fontSize: '14px' }}>Evästeasetukset</CookieSettingsLink></li>
                         </ul>
                     </div>
                 </div>
@@ -52,11 +55,6 @@ export default function Footer() {
                     <p style={{ color: '#666', fontSize: '14px' }}>
                         © 2026 <a href="https://voon.fi" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontWeight: 600 }}>VoonIQ-tuote.</a> Kaikki oikeudet pidätetään.
                     </p>
-                    <div style={{ display: 'flex', gap: '20px' }}>
-                        <Link href="#" style={{ color: '#666' }}><Twitter size={20} /></Link>
-                        <Link href="#" style={{ color: '#666' }}><Instagram size={20} /></Link>
-                        <Link href="#" style={{ color: '#666' }}><Facebook size={20} /></Link>
-                    </div>
                 </div>
             </div>
         </footer>

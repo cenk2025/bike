@@ -7,11 +7,18 @@ export default function CookieConsent() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        const consent = localStorage.getItem("cookie-consent");
-        if (!consent) {
-            const timer = setTimeout(() => setIsVisible(true), 1500);
-            return () => clearTimeout(timer);
+        // The footer's "Evästeasetukset" link re-opens the banner.
+        const open = () => setIsVisible(true);
+        window.addEventListener("open-cookie-settings", open);
+
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        if (!localStorage.getItem("cookie-consent")) {
+            timer = setTimeout(() => setIsVisible(true), 1500);
         }
+        return () => {
+            window.removeEventListener("open-cookie-settings", open);
+            if (timer) clearTimeout(timer);
+        };
     }, []);
 
     const handleAccept = () => {
@@ -60,9 +67,9 @@ export default function CookieConsent() {
                     <div style={{ flex: 1 }}>
                         <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '8px' }}>Evästeasetukset</h3>
                         <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-                            Käytämme evästeitä parantaaksemme käyttökokemustasi ja analysoidaksemme sivuston liikennettä.
-                            Jotkut evästeet ovat välttämättömiä sivuston toiminnalle (kuten kirjautuminen), kun taas toiset auttavat meitä parantamaan palvelua.
-                            Voit lukea lisää <a href="#" style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>tietosuojaselosteestamme</a>.
+                            Käytämme vain välttämättömiä evästeitä ja selaimen tallennustilaa (kirjautuminen, kielivalinta).
+                            Emme käytä analytiikka- tai mainosevästeitä. Jos otamme niitä käyttöön, ne vaativat hyväksyntäsi.
+                            Lue lisää <a href="/tietosuoja#evasteet" style={{ color: 'var(--primary-dark)', fontWeight: 600 }}>tietosuojaselosteesta</a>.
                         </p>
                     </div>
                     <button
