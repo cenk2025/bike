@@ -51,6 +51,7 @@ export default function Header() {
                 {/* Desktop Navigation */}
                 <nav className="desktop-only" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                     <Link href="/loydetyt" style={{ fontWeight: 500 }}>Löysin pyörän</Link>
+                    <Link href="/kartta" style={{ fontWeight: 500 }}>Kartta</Link>
                     <Link href="/tarkista" style={{ fontWeight: 500 }}>Tarkista sarjanumero</Link>
                     <Link href="/tarinat" style={{ fontWeight: 500 }}>Menestystarinat</Link>
 
@@ -97,6 +98,7 @@ export default function Header() {
                     }}
                 >
                     <Link href="/loydetyt" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>Löysin pyörän</Link>
+                    <Link href="/kartta" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>Kartta</Link>
                     <Link href="/tarkista" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>Tarkista sarjanumero</Link>
                     <Link href="/tarinat" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>Menestystarinat</Link>
                     <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />

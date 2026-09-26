@@ -47,6 +47,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.3,
         },
         {
+            url: `${baseUrl}/kartta`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.7,
+        },
+        {
             url: `${baseUrl}/tarinat`,
             lastModified: new Date(),
             changeFrequency: 'weekly',

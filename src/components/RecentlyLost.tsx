@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Bike as BikeIcon } from "lucide-react";
+import Link from "next/link";
 import BikeCard from "./BikeCard";
 import { supabase } from "@/lib/supabase";
 import type { PublicBike } from "@/lib/bikes";
@@ -40,7 +41,10 @@ export default function RecentlyLost() {
 
     return (
         <section className="container" style={{ margin: '60px auto' }}>
-            <h2 className="section-title" style={{ marginBottom: '32px' }}>Viimeisimmät ilmoitukset</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
+                <h2 className="section-title" style={{ marginBottom: 0 }}>Viimeisimmät ilmoitukset</h2>
+                <Link href="/kartta" style={{ color: 'var(--primary-dark)', fontWeight: 600, whiteSpace: 'nowrap' }}>Näytä kartalla →</Link>
+            </div>
 
             <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', overflowX: 'auto', paddingBottom: '8px' }}>
                 {TABS.map(({ label }) => (
