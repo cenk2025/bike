@@ -17,7 +17,7 @@ export default function Footer() {
                             <div style={{ backgroundColor: 'var(--primary)', padding: '6px', borderRadius: '8px', color: '#000', display: 'flex' }}>
                                 <Bike size={24} />
                             </div>
-                            CycleFound
+                            BikeBack
                         </div>
                         <p style={{ color: '#aaa', fontSize: '14px', lineHeight: 1.6 }}>
                             {t("footer.tagline")}

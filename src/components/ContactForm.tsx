@@ -21,7 +21,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 /**
- * Sends a message to a bike's owner (or finder) through CycleFound. The
+ * Sends a message to a bike's owner (or finder) through BikeBack. The
  * recipient's e-mail / phone are never shown; they read the message on their
  * dashboard (and by e-mail once the notify-owner function is deployed).
  */

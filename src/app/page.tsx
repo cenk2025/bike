@@ -10,10 +10,10 @@ export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "CycleFound",
+    "name": "BikeBack",
     "url": "https://bike.voon.fi",
     "logo": "https://bike.voon.fi/logo.png",
-    "description": "CycleFound on yhteisöpohjainen polkupyörien turvajärjestelmä ja varkausilmoituspalvelu.",
+    "description": "BikeBack on yhteisöpohjainen polkupyörien turvajärjestelmä ja varkausilmoituspalvelu.",
     "parentOrganization": {
       "@type": "Organization",
       "name": "VoonIQ",

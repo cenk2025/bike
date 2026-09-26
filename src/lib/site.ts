@@ -1,7 +1,7 @@
 // Company / contact details shown on the legal and partner pages.
 // Fill in businessId and address before launch – empty values are hidden.
 export const SITE = {
-    name: "CycleFound",
+    name: "BikeBack",
     url: "https://bike.voon.fi",
     company: "VoonIQ",
     businessId: "",   // Y-tunnus, e.g. "1234567-8"

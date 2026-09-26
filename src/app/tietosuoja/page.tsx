@@ -3,8 +3,8 @@ import ContentPage from "@/components/ContentPage";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-    title: "Tietosuojaseloste | CycleFound",
-    description: "Miten CycleFound käsittelee henkilötietojasi."
+    title: "Tietosuojaseloste | BikeBack",
+    description: "Miten BikeBack käsittelee henkilötietojasi."
 };
 
 export default function PrivacyPage() {
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
                 <li><strong>Rikosilmoituksen numero</strong>, jos lisäät sen varkausilmoitukseen.</li>
                 <li><strong>Yhteystiedot ilmoituksia varten:</strong> sähköposti ja puhelinnumero, jos annat ne.</li>
                 <li><strong>Löytäjän sähköposti</strong>, jos annat sen löytöilmoituksen yhteydessä.</li>
-                <li><strong>Viestit:</strong> CycleFoundin kautta lähetetyt viestit sekä lähettäjän nimi, sähköposti ja mahdollinen puhelinnumero.</li>
+                <li><strong>Viestit:</strong> BikeBackin kautta lähetetyt viestit sekä lähettäjän nimi, sähköposti ja mahdollinen puhelinnumero.</li>
                 <li><strong>Tekniset tiedot:</strong> kirjautumisen istuntotiedot selaimessa sekä palvelimien tavanomaiset lokitiedot.</li>
             </ul>
 

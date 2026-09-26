@@ -4,30 +4,30 @@ import ContentPage from "@/components/ContentPage";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-    title: "Ohjeet ja turvavinkit | CycleFound",
-    description: "Näin CycleFound toimii, miten suojaat pyöräsi ja mitä tehdä, kun pyörä katoaa tai löytyy."
+    title: "Ohjeet ja turvavinkit | BikeBack",
+    description: "Näin BikeBack toimii, miten suojaat pyöräsi ja mitä tehdä, kun pyörä katoaa tai löytyy."
 };
 
 export default function HelpPage() {
     return (
         <ContentPage
             title="Ohjeet ja turvavinkit"
-            intro="Näin CycleFound toimii – ja mitä kannattaa tehdä ennen varkautta, sen jälkeen ja kun löydät pyörän."
+            intro="Näin BikeBack toimii – ja mitä kannattaa tehdä ennen varkautta, sen jälkeen ja kun löydät pyörän."
         >
-            <h2>Näin CycleFound toimii</h2>
+            <h2>Näin BikeBack toimii</h2>
             <ul>
                 <li><strong>Rekisteröi pyöräsi ennakkoon.</strong> Tiedot eivät näy julkisesti, mutta ne ovat valmiina, jos pyörä katoaa.</li>
                 <li><strong>Ilmoita varkaudesta.</strong> Ilmoitus tulee julkiseksi, ja sitä verrataan automaattisesti jokaiseen löytöilmoitukseen.</li>
                 <li><strong>Löysitkö pyörän?</strong> Tee löytöilmoitus – käyttäjätiliä ei tarvita. Jos pyörä vastaa jonkun ilmoitusta, omistaja saa tiedon heti.</li>
                 <li><strong>Automaattinen osuma.</strong> Vertailu käyttää sarjanumeroa, merkkiä, mallia, väriä, kaupunkia ja päivämäärää. Omistaja vahvistaa tai hylkää osuman.</li>
-                <li><strong>Viestit kulkevat CycleFoundin kautta.</strong> Kenenkään yhteystietoja ei näytetä julkisesti.</li>
+                <li><strong>Viestit kulkevat BikeBackin kautta.</strong> Kenenkään yhteystietoja ei näytetä julkisesti.</li>
             </ul>
 
             <h2 id="turvavinkit">Ennen varkautta</h2>
             <ul>
                 <li><strong>Ota sarjanumero talteen.</strong> Se löytyy yleensä rungon alta polkimien välistä. Kuvaa se ja koko pyörä eri puolilta.</li>
                 <li><strong>Säilytä ostokuitti.</strong> Se on paras todiste omistajuudesta.</li>
-                <li><strong><Link href="/ilmoita-varkaudesta?tila=rekisteroi">Rekisteröi pyörä CycleFoundiin</Link>.</strong></li>
+                <li><strong><Link href="/ilmoita-varkaudesta?tila=rekisteroi">Rekisteröi pyörä BikeBackiin</Link>.</strong></li>
                 <li><strong>Lukitse kunnolla.</strong> Käytä U- tai ketjulukkoa ja lukitse runko kiinteään telineeseen – ei pelkkää rengasta.</li>
                 <li><strong>Harkitse paikanninta</strong> (esim. AirTag tai GPS-paikannin) piilotettuna runkoon tai satulaputkeen.</li>
                 <li><strong>Tarkista kotivakuutus.</strong> Kattaako se pyörän ja millä ehdoilla (esim. lukitusvaatimus)?</li>
@@ -36,7 +36,7 @@ export default function HelpPage() {
             <h2>Kun pyörä on varastettu</h2>
             <ul>
                 <li>Tee <a href="https://poliisi.fi/rikosilmoitus" target="_blank" rel="noopener noreferrer">rikosilmoitus poliisille</a> ja kirjaa ilmoituksen numero.</li>
-                <li><Link href="/ilmoita-varkaudesta">Ilmoita varkaudesta CycleFoundissa</Link> tai muuta ennakkoon rekisteröity pyöräsi varastetuksi omalta sivultasi.</li>
+                <li><Link href="/ilmoita-varkaudesta">Ilmoita varkaudesta BikeBackissa</Link> tai muuta ennakkoon rekisteröity pyöräsi varastetuksi omalta sivultasi.</li>
                 <li>Ilmoita vakuutusyhtiöösi.</li>
                 <li>Seuraa Tori.fi:tä, Facebook Marketplacea ja paikallisia kirpputoriryhmiä.</li>
                 <li>Jos näet pyöräsi myynnissä, <strong>älä mene hakemaan sitä yksin</strong> – ilmoita poliisille.</li>

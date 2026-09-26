@@ -8,8 +8,8 @@ import { ShieldCheck, Building2, Store, Home, Siren, ArrowRight, Search, Sparkle
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-    title: "Kumppaneille | CycleFound",
-    description: "CycleFound vakuutusyhtiöille, kaupungeille, pyöräliikkeille ja taloyhtiöille: vähemmän korvauksia, vähemmän hylättyjä pyöriä, enemmän palautuksia."
+    title: "Kumppaneille | BikeBack",
+    description: "BikeBack vakuutusyhtiöille, kaupungeille, pyöräliikkeille ja taloyhtiöille: vähemmän korvauksia, vähemmän hylättyjä pyöriä, enemmän palautuksia."
 };
 
 const mail = (subject: string) => `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}`;
@@ -43,7 +43,7 @@ const SEGMENTS = [
         points: [
             "Rekisteröi pyörä asiakkaan puolesta myyntihetkellä – lisäarvoa ilman lisätyötä.",
             "Tarkista huoltoon tulevan tai vaihdossa otettavan pyörän sarjanumero sekunneissa.",
-            "Näkyvyys CycleFoundissa luotettavana kumppanina."
+            "Näkyvyys BikeBackissa luotettavana kumppanina."
         ],
         cta: "Kumppanuus – pyöräliike"
     },
@@ -63,7 +63,7 @@ const STEPS = [
     { icon: ShieldCheck, title: "Rekisteröinti", text: "Omistaja tallentaa sarjanumeron, kuvat ja tuntomerkit – julkisesti tai ennakkoon yksityisesti." },
     { icon: Siren, title: "Varkaus tai löytö", text: "Varkaus- ja löytöilmoitukset tulevat samaan järjestelmään. Löytäjä ei tarvitse käyttäjätiliä." },
     { icon: Sparkles, title: "Automaattinen osuma", text: "Järjestelmä vertaa sarjanumeroa, merkkiä, mallia, väriä, paikkaa ja aikaa – myös kirjoitusvirheistä huolimatta." },
-    { icon: MessageSquare, title: "Turvallinen yhteydenotto", text: "Omistaja ja löytäjä viestivät CycleFoundin kautta. Kenenkään yhteystietoja ei julkaista." }
+    { icon: MessageSquare, title: "Turvallinen yhteydenotto", text: "Omistaja ja löytäjä viestivät BikeBackin kautta. Kenenkään yhteystietoja ei julkaista." }
 ];
 
 export default function PartnersPage() {
@@ -78,10 +78,10 @@ export default function PartnersPage() {
                         Jokainen palautettu pyörä on vältetty korvaus, yksi rikos vähemmän ja tyytyväinen asiakas.
                     </h1>
                     <p style={{ fontSize: '18px', color: '#bbb', lineHeight: 1.6, marginBottom: '32px' }}>
-                        CycleFound yhdistää varkaus-, löytö- ja rekisteröintitiedot yhteen paikkaan ja löytää osumat
+                        BikeBack yhdistää varkaus-, löytö- ja rekisteröintitiedot yhteen paikkaan ja löytää osumat
                         automaattisesti. Aloitamme Suomesta ja laajennamme koko Pohjolaan.
                     </p>
-                    <a href={mail("Kumppanuus – CycleFound")} className="primary-button" style={{ padding: '16px 28px', fontSize: '17px' }}>
+                    <a href={mail("Kumppanuus – BikeBack")} className="primary-button" style={{ padding: '16px 28px', fontSize: '17px' }}>
                         Varaa esittely <ArrowRight size={20} />
                     </a>
                 </div>
@@ -136,7 +136,7 @@ export default function PartnersPage() {
                         osumat ja palautukset – ja päätätte jatkosta tulosten perusteella.
                     </p>
                     <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <a href={mail("Pilotti – CycleFound")} className="primary-button" style={{ padding: '14px 24px' }}>Ehdota pilottia</a>
+                        <a href={mail("Pilotti – BikeBack")} className="primary-button" style={{ padding: '14px 24px' }}>Ehdota pilottia</a>
                         <Link href="/tarkista" className="secondary-button" style={{ padding: '14px 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Search size={18} /> Kokeile sarjanumerotarkistusta
                         </Link>

@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: "CycleFound – löydä pyöräsi",
-        short_name: "CycleFound",
+        name: "BikeBack – löydä pyöräsi",
+        short_name: "BikeBack",
         description: "Ilmoita varastetusta tai löydetystä pyörästä ja saa ilmoitus heti, kun osuma löytyy.",
         start_url: "/",
         scope: "/",

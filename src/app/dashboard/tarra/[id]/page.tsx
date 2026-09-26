@@ -78,7 +78,7 @@ export default function StickerSheetPage({ params }: { params: Promise<{ id: str
                                 <div style={{ fontWeight: 800, fontSize: '13pt' }}>Löysitkö tämän pyörän?</div>
                                 <div style={{ fontSize: '9pt', margin: '1.5mm 0' }}>Skannaa koodi ja ilmoita omistajalle.</div>
                                 <div style={{ fontSize: '8pt', color: '#555' }}>Hittade du cykeln? · Found this bike?</div>
-                                <div style={{ fontWeight: 800, fontSize: '10pt', marginTop: '2mm' }}>CycleFound</div>
+                                <div style={{ fontWeight: 800, fontSize: '10pt', marginTop: '2mm' }}>BikeBack</div>
                                 <div style={{ fontSize: '8pt', color: '#555' }}>bike.voon.fi/q/{bike.tag_code}</div>
                             </div>
                         </div>

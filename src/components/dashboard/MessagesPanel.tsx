@@ -98,7 +98,7 @@ export default function MessagesPanel({ userId, scope = "own" }: { userId: strin
                             </div>
                             <p style={{ lineHeight: 1.6, marginBottom: '12px', whiteSpace: 'pre-wrap' }}>{m.body}</p>
                             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '14px' }}>
-                                <a href={`mailto:${m.sender_email}?subject=${encodeURIComponent(`CycleFound: ${bikeTitle(m.bikes ?? {})}`)}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary-dark)', fontWeight: 600 }}>
+                                <a href={`mailto:${m.sender_email}?subject=${encodeURIComponent(`BikeBack: ${bikeTitle(m.bikes ?? {})}`)}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary-dark)', fontWeight: 600 }}>
                                     <Mail size={14} /> {m.sender_email}
                                 </a>
                                 {m.sender_phone && (

@@ -21,7 +21,7 @@ interface TaggedBike {
 }
 
 /**
- * Landing page of a CycleFound QR sticker (bike.voon.fi/q/<code>).
+ * Landing page of a BikeBack QR sticker (bike.voon.fi/q/<code>).
  * The finder can message the owner without an account – the owner's
  * contact details are never shown.
  */

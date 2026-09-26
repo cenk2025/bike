@@ -1,4 +1,4 @@
--- Demo data for trying out CycleFound. NOT a migration – run it manually in
+-- Demo data for trying out BikeBack. NOT a migration – run it manually in
 -- the Supabase SQL editor after 2026-09-26_matching_privacy_stats.sql.
 --
 -- * Every row is flagged is_demo = true.
@@ -110,11 +110,11 @@ begin
     insert into public.stories (user_id, full_name, location, content, approved, is_demo)
     values
         (owner, 'Aino L.', 'Helsinki',
-         'Joponi varastettiin Kalliosta. Kaksi päivää myöhemmin CycleFound ilmoitti, että sarjanumerolla oli tehty löytöilmoitus Sörnäisistä. Sain pyörän takaisin samana iltana!', true, true),
+         'Joponi varastettiin Kalliosta. Kaksi päivää myöhemmin BikeBack ilmoitti, että sarjanumerolla oli tehty löytöilmoitus Sörnäisistä. Sain pyörän takaisin samana iltana!', true, true),
         (owner, 'Janne P.', 'Kerava',
          'Rekisteröin pyöräni etukäteen. Kun se katosi, kaikki tiedot ja kuvat olivat valmiina – poliisi ja vakuutusyhtiö saivat ne heti.', true, true),
         (owner, 'Taloyhtiö As Oy Harju', 'Jyväskylä',
-         'Kevään pyöräsiivouksessa löytyi 14 hylättyä pyörää. Kolme niistä palautui omistajalleen CycleFoundin kautta.', true, true);
+         'Kevään pyöräsiivouksessa löytyi 14 hylättyä pyörää. Kolme niistä palautui omistajalleen BikeBackin kautta.', true, true);
 end $$;
 
 select brand, model, score, reasons

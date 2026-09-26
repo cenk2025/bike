@@ -7,23 +7,23 @@ import { getLang } from "@/i18n/server";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://bike.voon.fi'),
-  title: "CycleFound | Suojaa ja löydä polkupyöräsi",
-  description: "CycleFound on yhteisöpohjainen verkosto varastettujen polkupyörien löytämiseksi. Ilmoita varkaudesta, rekisteröi pyöräsi ja auta muita löytämään omansa. VoonIQ-tuote.",
+  title: "BikeBack | Suojaa ja löydä polkupyöräsi",
+  description: "BikeBack on yhteisöpohjainen verkosto varastettujen polkupyörien löytämiseksi. Ilmoita varkaudesta, rekisteröi pyöräsi ja auta muita löytämään omansa. VoonIQ-tuote.",
   keywords: ["kadonnut pyörä", "varastettu polkupyörä", "pyörävarkaus", "Suomi", "löytöpaikka", "yhteisö", "polkupyörä", "VoonIQ"],
   authors: [{ name: "VoonIQ" }],
-  appleWebApp: { capable: true, title: "CycleFound", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "BikeBack", statusBarStyle: "default" },
   icons: { icon: "/icon-192.png", apple: "/apple-touch-icon.png" },
   openGraph: {
-    title: "CycleFound | Suojaa polkupyöräsi",
+    title: "BikeBack | Suojaa polkupyöräsi",
     description: "Autamme pyörän omistajia teknologian ja yhteisön avulla. Ilmoita varkaudesta tai löydetystä pyörästä.",
     url: "https://bike.voon.fi",
-    siteName: "CycleFound",
+    siteName: "BikeBack",
     locale: "fi_FI",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "CycleFound | Suojaa polkupyöräsi",
+    title: "BikeBack | Suojaa polkupyöräsi",
     description: "Yhteisöpohjainen verkosto varastettujen polkupyörien löytämiseksi.",
   },
   robots: {

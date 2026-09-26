@@ -14,7 +14,7 @@ const FALLBACKS: Record<string, AdSlot> = {
         eyebrow: "Mielenrauha",
         title: "Mainosmahdollisuudet vakuutusyhtiöille",
         description:
-            "CycleFound auttaa pyöräilijöitä saamaan pyöränsä takaisin — ja vakuutusyhtiöitä " +
+            "BikeBack auttaa pyöräilijöitä saamaan pyöränsä takaisin — ja vakuutusyhtiöitä " +
             "vähentämään korvauskuluja. Etsimme kumppaneita rakentamaan turvallisempaa " +
             "pyöräily-Suomea yhdessä.",
         image_url: null,
@@ -28,7 +28,7 @@ const FALLBACKS: Record<string, AdSlot> = {
         eyebrow: "PREMIUM-MAINOSPAIKKA — VAPAA",
         title: "Bränditila pyörä- ja moottoripyöräyhtiöille",
         description:
-            "Premium-sijoittelu CycleFoundin etusivulla. Tavoita ostohaluiset pyöräilijät " +
+            "Premium-sijoittelu BikeBackin etusivulla. Tavoita ostohaluiset pyöräilijät " +
             "juuri silloin, kun he tutkivat pyöriinsä liittyviä palveluita.",
         image_url: null,
         cta_label: "Varaa mainospaikka",

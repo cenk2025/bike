@@ -48,7 +48,7 @@ export default function Header() {
                     <div style={{ backgroundColor: 'var(--primary)', padding: '6px', borderRadius: '8px', color: '#000', display: 'flex' }}>
                         <Bike size={24} />
                     </div>
-                    CycleFound
+                    BikeBack
                 </Link>
 
                 {/* Desktop Navigation */}

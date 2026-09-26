@@ -1,5 +1,5 @@
-// CycleFound service worker: offline fallback + web push notifications.
-const CACHE = "cyclefound-v1";
+// BikeBack service worker: offline fallback + web push notifications.
+const CACHE = "bikeback-v1";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", event => {
@@ -29,7 +29,7 @@ self.addEventListener("push", event => {
         data = { body: event.data && event.data.text() };
     }
     event.waitUntil(
-        self.registration.showNotification(data.title || "CycleFound", {
+        self.registration.showNotification(data.title || "BikeBack", {
             body: data.body || "",
             icon: "/icon-192.png",
             badge: "/icon-192.png",

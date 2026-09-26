@@ -6,7 +6,7 @@
 // Deploy:
 //   supabase functions deploy notify-owner --no-verify-jwt
 //   supabase secrets set RESEND_API_KEY=... WEBHOOK_SECRET=... \
-//       MAIL_FROM="CycleFound <noreply@voon.fi>" SITE_URL=https://bike.voon.fi \
+//       MAIL_FROM="BikeBack <noreply@voon.fi>" SITE_URL=https://bike.voon.fi \
 //       VAPID_PUBLIC_KEY=... VAPID_PRIVATE_KEY=... VAPID_SUBJECT=mailto:info@voon.fi
 // (Generate the VAPID pair once with: npx web-push generate-vapid-keys, and
 //  put the public key also in the app env as NEXT_PUBLIC_VAPID_PUBLIC_KEY.)
@@ -18,7 +18,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
 
 const SITE_URL = Deno.env.get("SITE_URL") ?? "https://bike.voon.fi";
-const MAIL_FROM = Deno.env.get("MAIL_FROM") ?? "CycleFound <noreply@voon.fi>";
+const MAIL_FROM = Deno.env.get("MAIL_FROM") ?? "BikeBack <noreply@voon.fi>";
 
 const admin = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -124,7 +124,7 @@ Deno.serve(async req => {
 
             await sendMail(
                 to,
-                `CycleFound: mahdollinen osuma – ${title(lost)}`,
+                `BikeBack: mahdollinen osuma – ${title(lost)}`,
                 `<p>Hei!</p>
                  <p>Joku ilmoitti löytäneensä pyörän, joka vastaa pyörääsi <b>${esc(title(lost))}</b>
                  (${esc(found.location || found.city || "sijainti tuntematon")}).</p>
@@ -140,13 +140,13 @@ Deno.serve(async req => {
 
             await sendMail(
                 to,
-                `CycleFound: uusi viesti – ${title(bike)}`,
+                `BikeBack: uusi viesti – ${title(bike)}`,
                 `<p>Hei!</p>
                  <p><b>${esc(record.sender_name)}</b> lähetti viestin koskien pyörää <b>${esc(title(bike))}</b>:</p>
                  <blockquote>${esc(record.body).replace(/\n/g, "<br>")}</blockquote>
                  <p>Vastaa suoraan tähän sähköpostiin${record.sender_phone ? ` tai soita ${esc(record.sender_phone)}` : ""}.</p>
                  <p>Turvallisuus: älä maksa etukäteen, tapaa julkisella paikalla ja pyydä todiste omistajuudesta.</p>
-                 ${bike.user_id ? `<p><a href="${SITE_URL}/dashboard">Avaa CycleFound</a></p>` : ""}`,
+                 ${bike.user_id ? `<p><a href="${SITE_URL}/dashboard">Avaa BikeBack</a></p>` : ""}`,
                 record.sender_email
             );
         }
