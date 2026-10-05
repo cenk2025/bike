@@ -1,68 +1,57 @@
 "use client";
 
-import { AlertTriangle, Search } from "lucide-react";
 import Link from "next/link";
+import { AlertTriangle, Search } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
+import Sticker from "./home/Sticker";
+import BikeScene from "./home/BikeScene";
 
 export default function Hero() {
     const { t } = useI18n();
     return (
-        <section style={{
-            padding: '60px 0',
-            background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat',
-            borderRadius: '24px',
-            margin: '20px',
-            minHeight: '500px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: '#fff',
-            textAlign: 'center'
-        }}>
-            <div className="container" style={{ maxWidth: '800px' }}>
-                <h1 style={{ fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 800, marginBottom: '16px', lineHeight: 1.1 }}>
-                    {t("hero.title")}
+        <>
+            <section style={{ textAlign: 'center', padding: 'clamp(24px, 5vw, 48px) 16px 0', position: 'relative' }}>
+                <h1 className="hero-title" style={{ position: 'relative', display: 'inline-block', margin: '0 auto' }}>
+                    BikeBack
+                    <Sticker className="hero-sticker-a" shape="flower" color="mint" size="clamp(74px, 11vw, 140px)" rotate={-8} style={{ left: '-7%', top: '18%' }}>
+                        {t("hero.sticker1")}
+                    </Sticker>
+                    <Sticker className="hero-sticker-b" shape="pill" color="pink" size="clamp(96px, 12vw, 170px)" rotate={-4} style={{ left: '50%', top: '22%' }}>
+                        {t("hero.sticker2")}
+                    </Sticker>
+                    <Sticker className="hero-sticker-c" shape="burst" color="lavender" size="clamp(80px, 11vw, 150px)" rotate={-28} style={{ right: '-9%', top: '-2%' }}>
+                        {t("hero.sticker3")}
+                    </Sticker>
                 </h1>
-                <p style={{ fontSize: '18px', marginBottom: '40px', color: 'rgba(255,255,255,0.9)', fontWeight: 400 }}>
+
+                <p className="display" style={{ fontSize: 'clamp(24px, 3.4vw, 40px)', fontWeight: 600, marginTop: '14px' }}>
+                    {t("hero.tagline")}
+                </p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '17px', maxWidth: '560px', margin: '8px auto 0' }}>
                     {t("hero.subtitle")}
                 </p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', width: '100%' }}>
-                    <Link href="/ilmoita-varkaudesta" className="secondary-button" style={{
-                        height: '140px',
-                        borderRadius: '20px',
-                        justifyContent: 'center',
-                        flexDirection: 'column',
-                        fontSize: '18px',
-                        backgroundColor: 'var(--secondary)'
-                    }}>
-                        <AlertTriangle size={32} />
-                        {t("hero.reportTheft")}
+                <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '28px' }}>
+                    <Link href="/ilmoita-varkaudesta" className="primary-button" style={{ fontSize: '19px', padding: '14px 30px' }}>
+                        <AlertTriangle size={20} /> {t("hero.reportTheft")}
                     </Link>
-
-                    <Link href="/loydetyt" className="primary-button" style={{
-                        height: '140px',
-                        borderRadius: '20px',
-                        justifyContent: 'center',
-                        flexDirection: 'column',
-                        fontSize: '18px',
-                        backgroundColor: 'var(--primary)'
-                    }}>
-                        <Search size={32} />
-                        {t("hero.foundBike")}
+                    <Link href="/loydetyt" className="secondary-button" style={{ fontSize: '19px', padding: '14px 30px' }}>
+                        <Search size={20} /> {t("hero.foundBike")}
                     </Link>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px 28px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '28px', fontSize: '15px' }}>
-                    <Link href="/ilmoita-varkaudesta?tila=rekisteroi" style={{ color: '#fff', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '4px' }}>
-                        {t("hero.register")}
-                    </Link>
-                    <Link href="/tarkista" style={{ color: '#fff', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '4px' }}>
-                        {t("hero.check")}
-                    </Link>
+                <div style={{ display: 'flex', gap: '8px 24px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px', fontSize: '15px', fontWeight: 600 }}>
+                    <Link href="/ilmoita-varkaudesta?tila=rekisteroi" style={{ textDecoration: 'underline', textUnderlineOffset: '4px' }}>{t("hero.register")}</Link>
+                    <Link href="/tarkista" style={{ textDecoration: 'underline', textUnderlineOffset: '4px' }}>{t("hero.check")}</Link>
+                </div>
+            </section>
+
+            <div className="rings">
+                <div className="scene-circle">
+                    <BikeScene foundLabel={t("hero.found")} title={t("hero.sceneAlt")} />
                 </div>
             </div>
-        </section>
+            <div className="scallops" aria-hidden="true" />
+        </>
     );
 }

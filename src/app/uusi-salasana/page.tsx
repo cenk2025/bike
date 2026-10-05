@@ -52,7 +52,7 @@ export default function NewPasswordPage() {
     };
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
             <div className="container" style={{ maxWidth: '420px', padding: '80px 24px' }}>
                 <h1 style={{ fontSize: '30px', fontWeight: 800, marginBottom: '24px', textAlign: 'center' }}>{t("reset.newTitle")}</h1>

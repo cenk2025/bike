@@ -108,7 +108,7 @@ export default function FoundBike() {
 
     if (success) {
         return (
-            <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+            <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
                 <Header />
                 <div className="container" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
                     <div className="card" style={{ textAlign: 'center', padding: '40px', maxWidth: '520px' }}>
@@ -131,7 +131,7 @@ export default function FoundBike() {
     }
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
 
             <div className="container" style={{ maxWidth: '600px', padding: '40px 24px' }}>

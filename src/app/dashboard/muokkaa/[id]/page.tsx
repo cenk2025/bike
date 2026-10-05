@@ -166,7 +166,7 @@ export default function EditBikePage({ params }: { params: Promise<{ id: string 
     );
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
 
             <div className="container" style={{ maxWidth: '600px', padding: '40px 24px' }}>

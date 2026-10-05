@@ -1,29 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --primary: #00e676;
-  --primary-dark: #00c853;
-  --secondary: #ff5252;
-  --secondary-dark: #ff1744;
-  --background: #f8f9fa;
-  --surface: #ffffff;
-  --text: #1a1a1a;
-  --text-muted: #666666;
-  --border: #e0e0e0;
-  --radius: 12px;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --font-outfit: 'Outfit', sans-serif;
-  --header-height: 72px;
-}
+  /* Brand palette (playful, warm) */
+  --cream: #fdf8e4;
+  --maroon: #3a0b1c;
+  --yellow: #ffe27a;
+  --pink: #f4a7c3;
+  --lavender: #c4c7ff;
+  --mint: #a8e6c1;
+  --shell: #e8e5d4;
 
-[data-theme='dark'] {
-  --background: #121212;
-  --surface: #1e1e1e;
-  --text: #ffffff;
-  --text-muted: #aaaaaa;
-  --border: #333333;
+  --primary: var(--yellow);
+  --primary-dark: #a3175a;
+  --secondary: #e5484d;
+  --secondary-dark: #c9343a;
+  --background: var(--cream);
+  --surface: #fffdf6;
+  --text: var(--maroon);
+  --text-muted: #6e4b55;
+  --border: #eadcc6;
+  --radius: 16px;
+  --shadow-sm: 0 2px 6px rgba(58, 11, 28, 0.05);
+  --shadow-md: 0 6px 16px rgba(58, 11, 28, 0.08);
+  --shadow-lg: 0 12px 32px rgba(58, 11, 28, 0.14);
+  --font-outfit: var(--font-body), 'Outfit', sans-serif;
+  --font-display: var(--font-heading), 'Oswald', 'Arial Narrow', sans-serif;
+  --header-height: 76px;
 }
 
 * {
@@ -33,6 +34,7 @@
 }
 
 body {
+  overflow-x: hidden;
   font-family: var(--font-outfit);
   background-color: var(--background);
   color: var(--text);
@@ -69,7 +71,7 @@ ul {
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(253, 248, 228, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -79,52 +81,64 @@ ul {
   background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
 }
 
-.primary-button {
-  background-color: var(--primary);
-  color: #000;
+/* Chunky pill buttons with a solid "pressed" shadow */
+.primary-button,
+.secondary-button {
+  font-family: var(--font-display);
   font-weight: 600;
-  padding: 12px 24px;
-  border-radius: var(--radius);
+  font-size: 17px;
+  letter-spacing: 0.01em;
+  padding: 12px 26px;
+  border-radius: 999px !important;
+  border: 2px solid var(--maroon);
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 5px 0 var(--maroon);
+  transform: translateY(0);
 }
 
-.primary-button:hover {
-  background-color: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+.primary-button {
+  background-color: var(--yellow);
+  color: var(--maroon);
 }
 
 .secondary-button {
-  background-color: var(--secondary);
-  color: #fff;
-  font-weight: 600;
-  padding: 12px 24px;
-  border-radius: var(--radius);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: var(--shadow-sm);
+  background-color: var(--pink);
+  color: var(--maroon);
 }
 
+.primary-button:hover,
 .secondary-button:hover {
-  background-color: var(--secondary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(2px);
+  box-shadow: 0 3px 0 var(--maroon);
+}
+
+.primary-button:active,
+.secondary-button:active {
+  transform: translateY(5px);
+  box-shadow: 0 0 0 var(--maroon);
 }
 
 .card {
   background-color: var(--surface);
-  border-radius: var(--radius);
+  border-radius: 20px;
   padding: 24px;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
+}
+
+h1,
+h2,
+.section-title,
+.display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  line-height: 1.05;
 }
 
 .section-title {
-  font-size: 24px;
+  font-size: clamp(30px, 4vw, 44px);
   font-weight: 700;
   margin-bottom: 24px;
 }
@@ -190,4 +204,220 @@ ul {
 .content-page a {
   color: var(--primary-dark);
   font-weight: 600;
+}
+
+/* ── Header + menu ─────────────────────────────────────────── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  background: rgba(253, 248, 228, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-pill {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  min-width: 96px;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background-color: #f6e3c8;
+  color: var(--maroon);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-pill:hover {
+  background-color: var(--yellow);
+}
+
+.menu-panel {
+  position: absolute;
+  top: calc(var(--header-height) - 4px);
+  right: max(16px, calc((100vw - 1200px) / 2 + 24px));
+  width: min(420px, calc(100vw - 32px));
+  background: var(--surface);
+  border: 2px solid var(--maroon);
+  border-radius: 24px;
+  box-shadow: 0 8px 0 var(--maroon);
+  padding: 20px 24px 24px;
+  z-index: 2;
+  animation: slideDown 0.25s ease;
+}
+
+.menu-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.25;
+  padding: 4px 0;
+}
+
+.menu-link:hover {
+  color: var(--primary-dark);
+}
+
+/* ── Stickers (blob labels on top of big type) ─────────────── */
+.sticker {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  white-space: normal;
+  color: var(--maroon);
+  animation: sticker-wobble 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.sticker svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+@keyframes sticker-wobble {
+  0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(0); }
+  50% { transform: rotate(calc(var(--rot, 0deg) + 4deg)) translateY(-4px); }
+}
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(56px, 15vw, 230px);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: var(--maroon);
+}
+
+.rings {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0 120px;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, #f7d6e8 0 14px, #e9a6d6 15px 22px, #fbe7a1 23px 30px, #f7d6e8 31px 36px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 120px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 120px);
+}
+
+/* Radar pulse: rings sweeping outward from the circle */
+.rings::before,
+.rings::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 40px);
+  width: min(70vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  transform: translate(-50%, -50%) scale(1);
+  animation: radar 4s ease-out infinite;
+  pointer-events: none;
+}
+
+.rings::after {
+  animation-delay: 2s;
+}
+
+@keyframes radar {
+  from { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+  to { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+}
+
+.scene-circle {
+  position: relative;
+  z-index: 1;
+  width: min(78vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 10px solid #f9dcec;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.6), 0 20px 50px rgba(163, 23, 90, 0.25);
+  background: #fff4d6;
+}
+
+/* Scalloped edge: a row of half-circles in the next section's colour */
+.scallops {
+  height: 60px;
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+  background:
+    radial-gradient(circle at 50% 100%, var(--shell) 0 58px, transparent 59px) 0 0 / 118px 60px repeat-x;
+}
+
+.shell-section {
+  background: linear-gradient(to bottom, var(--shell), #f3f0e2 600px, var(--cream));
+}
+
+/* Bike scene animation */
+.scene-wheel { transform-box: fill-box; transform-origin: center; animation: spin 0.9s linear infinite; }
+.scene-crank { transform-box: fill-box; transform-origin: center; animation: spin 1.8s linear infinite; }
+.scene-bike { animation: bob 0.45s ease-in-out infinite alternate; }
+.scene-road { animation: road 0.6s linear infinite; }
+.scene-clouds { animation: clouds 14s linear infinite; }
+.scene-trees { animation: trees 5s linear infinite; }
+.scene-pin { transform-box: fill-box; transform-origin: 50% 100%; animation: pin 4s ease-in-out infinite; }
+.scene-ping { transform-box: fill-box; transform-origin: center; animation: ping 2s ease-out infinite; }
+.scene-badge { transform-box: fill-box; transform-origin: center; animation: badge 4s ease-in-out infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+@keyframes road { to { stroke-dashoffset: -40; } }
+@keyframes clouds { from { transform: translateX(0); } to { transform: translateX(-400px); } }
+@keyframes trees { from { transform: translateX(0); } to { transform: translateX(-400px); } }
+@keyframes pin {
+  0%, 100% { transform: translateY(0) scale(1); }
+  10% { transform: translateY(-14px) scale(1.05); }
+  20% { transform: translateY(0) scale(1); }
+}
+@keyframes ping {
+  from { transform: scale(0.4); opacity: 0.9; }
+  to { transform: scale(2.2); opacity: 0; }
+}
+@keyframes badge {
+  0%, 35%, 100% { transform: scale(0) rotate(-12deg); opacity: 0; }
+  45%, 85% { transform: scale(1) rotate(-8deg); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker, .rings::before, .rings::after,
+  .scene-wheel, .scene-crank, .scene-bike, .scene-road, .scene-clouds,
+  .scene-trees, .scene-pin, .scene-ping {
+    animation: none !important;
+  }
+  .scene-badge { animation: none !important; opacity: 1; transform: rotate(-8deg); }
+}
+
+/* Small screens: smaller stickers pushed off the word so it stays readable */
+@media (max-width: 600px) {
+  .hero-title { margin-top: 44px !important; }
+  .hero-sticker-a { left: -12% !important; top: 48% !important; scale: 0.72; }
+  .hero-sticker-b { left: 30% !important; top: -62% !important; scale: 0.8; }
+  .hero-sticker-c { right: -14% !important; top: -48% !important; scale: 0.72; }
 }

@@ -133,7 +133,7 @@ export default function BikeCard({ bike }: { bike: PublicBike }) {
                             )}
 
                             {(bike.status === 'varastettu' || bike.status === 'ilmoitettu') && (
-                                <div style={{ backgroundColor: '#fcfcfc', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px' }}>
+                                <div style={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px' }}>
                                     <h4 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '6px' }}>
                                         {t(bike.status === 'varastettu' ? "card.sawIt" : "card.isYours")}
                                     </h4>

@@ -48,7 +48,7 @@ export default function JoinPage() {
     };
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
 
             <div className="container" style={{ maxWidth: '450px', padding: '80px 24px' }}>

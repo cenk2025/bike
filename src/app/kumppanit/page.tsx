@@ -68,7 +68,7 @@ const STEPS = [
 
 export default function PartnersPage() {
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
 
             <section style={{ backgroundColor: '#0a0a0a', color: '#fff', padding: '80px 0' }}>

@@ -41,7 +41,7 @@ export default function StoriesPage() {
         `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=8bc34a&color=fff&bold=true&size=96`;
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
 
             <div className="container" style={{ padding: '60px 24px' }}>

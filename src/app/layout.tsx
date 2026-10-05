@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Oswald, Outfit } from "next/font/google";
 import "./globals.css";
 import CookieConsent from "@/components/CookieConsent";
 import PwaRegister from "@/components/PwaRegister";
@@ -39,6 +40,10 @@ export const metadata: Metadata = {
   },
 };
 
+// Self-hosted at build time – no runtime request to Google Fonts.
+const outfit = Outfit({ subsets: ["latin", "latin-ext"], weight: ["300", "400", "500", "600", "700", "800"], variable: "--font-body" });
+const oswald = Oswald({ subsets: ["latin", "latin-ext"], weight: ["500", "600", "700"], variable: "--font-heading" });
+
 export const viewport: Viewport = {
   themeColor: "#00e676",
 };
@@ -50,7 +55,7 @@ export default async function RootLayout({
 }>) {
   const lang = await getLang();
   return (
-    <html lang={lang}>
+    <html lang={lang} className={`${outfit.variable} ${oswald.variable}`}>
       <body>
         <I18nProvider lang={lang}>
           {children}

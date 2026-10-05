@@ -114,7 +114,7 @@ export default function MapPage() {
     const selectedBikes = selectedGroup ? [...selectedGroup.stolen, ...selectedGroup.found] : [];
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
             <div className="container" style={{ padding: '40px 24px 60px' }}>
                 <h1 style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 800, marginBottom: '8px' }}>{t("map.title")}</h1>

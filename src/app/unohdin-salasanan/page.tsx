@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
             <div className="container" style={{ maxWidth: '420px', padding: '80px 24px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '32px' }}>

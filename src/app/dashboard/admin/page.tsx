@@ -131,7 +131,7 @@ export default function AdminPage() {
     }
 
     return (
-        <main style={{ backgroundColor: "#fcfcfc", minHeight: "100vh" }}>
+        <main style={{ backgroundColor: "var(--background)", minHeight: "100vh" }}>
             <Header />
 
             <div className="container" style={{ maxWidth: "800px", padding: "40px 24px" }}>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bike, User, Menu, X } from "lucide-react";
+import { Bike, User, X, ArrowUpRight } from "lucide-react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -17,109 +17,82 @@ export default function Header() {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
         });
-
-        // Initial check
-        supabase.auth.getUser().then(({ data: { user } }) => {
-            setUser(user);
-        });
-
+        supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
         return () => subscription.unsubscribe();
     }, []);
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    useEffect(() => {
+        if (!isMenuOpen) return;
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setIsMenuOpen(false);
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [isMenuOpen]);
+
+    const close = () => setIsMenuOpen(false);
+    const links = [
+        { href: "/ilmoita-varkaudesta", label: t("hero.reportTheft") },
+        { href: "/loydetyt", label: t("nav.found") },
+        { href: "/kartta", label: t("nav.map") },
+        { href: "/tarkista", label: t("nav.check") },
+        { href: "/tarinat", label: t("nav.stories") }
+    ];
 
     return (
-        <header className="glass" style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 1000,
-            height: 'var(--header-height)',
-            display: 'flex',
-            alignItems: 'center',
-            borderBottom: '1px solid var(--border)'
-        }}>
-            <div className="container" style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%'
-            }}>
-                <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '20px', color: 'var(--text)' }}>
-                    <div style={{ backgroundColor: 'var(--primary)', padding: '6px', borderRadius: '8px', color: '#000', display: 'flex' }}>
-                        <Bike size={24} />
-                    </div>
-                    BikeBack
+        <header className="site-header">
+            <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text)' }}>
+                    <span style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--yellow)', border: '2px solid var(--maroon)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Bike size={22} />
+                    </span>
+                    <span style={{ lineHeight: 1.1 }}>
+                        <span style={{ display: 'block', fontWeight: 700, fontSize: '18px' }}>BikeBack</span>
+                        <span style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)' }}>{t("nav.tagline")}</span>
+                    </span>
                 </Link>
 
-                {/* Desktop Navigation */}
-                <nav className="desktop-only" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                    <Link href="/loydetyt" style={{ fontWeight: 500 }}>{t("nav.found")}</Link>
-                    <Link href="/kartta" style={{ fontWeight: 500 }}>{t("nav.map")}</Link>
-                    <Link href="/tarkista" style={{ fontWeight: 500 }}>{t("nav.check")}</Link>
-                    <Link href="/tarinat" style={{ fontWeight: 500 }}>{t("nav.stories")}</Link>
-
-                    {user ? (
-                        <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: 'var(--primary-dark)' }}>
-                            <User size={18} /> {user?.user_metadata?.full_name || t("nav.myPage")}
-                        </Link>
-                    ) : (
-                        <>
-                            <Link href="/kirjaudu" style={{ fontWeight: 500, color: 'var(--primary-dark)' }}>{t("nav.login")}</Link>
-                            <Link href="/liity" className="primary-button" style={{ padding: '8px 20px' }}>
-                                {t("nav.join")}
-                            </Link>
-                        </>
-                    )}
-                    <LanguageSwitcher />
-                </nav>
-
-                {/* Mobile Menu Button */}
-                <button
-                    className="mobile-only"
-                    onClick={toggleMenu}
-                    style={{ background: 'transparent', color: 'var(--text)', padding: '8px' }}
-                >
-                    {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span className="desktop-only"><LanguageSwitcher /></span>
+                    <button
+                        type="button"
+                        className="menu-pill"
+                        onClick={() => setIsMenuOpen(o => !o)}
+                        aria-expanded={isMenuOpen}
+                        aria-controls="site-menu"
+                    >
+                        {isMenuOpen ? <X size={20} /> : t("nav.menu")}
+                    </button>
+                </div>
             </div>
 
-            {/* Mobile Navigation Dropdown */}
             {isMenuOpen && (
-                <div
-                    className="mobile-nav-active"
-                    style={{
-                        position: 'absolute',
-                        top: 'var(--header-height)',
-                        left: 0,
-                        right: 0,
-                        backgroundColor: 'var(--surface)',
-                        borderBottom: '1px solid var(--border)',
-                        padding: '24px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '20px',
-                        boxShadow: 'var(--shadow-lg)'
-                    }}
-                >
-                    <Link href="/loydetyt" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>{t("nav.found")}</Link>
-                    <Link href="/kartta" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>{t("nav.map")}</Link>
-                    <Link href="/tarkista" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>{t("nav.check")}</Link>
-                    <Link href="/tarinat" onClick={toggleMenu} style={{ fontWeight: 600, fontSize: '18px' }}>{t("nav.stories")}</Link>
-                    <LanguageSwitcher />
-                    <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
-                    {user ? (
-                        <Link href="/dashboard" onClick={toggleMenu} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: 'var(--primary-dark)', fontSize: '18px' }}>
-                            <User size={20} /> {user?.user_metadata?.full_name || t("nav.myPage")}
-                        </Link>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            <Link href="/kirjaudu" onClick={toggleMenu} style={{ fontWeight: 600, color: 'var(--primary-dark)', fontSize: '18px' }}>{t("nav.login")}</Link>
-                            <Link href="/liity" onClick={toggleMenu} className="primary-button" style={{ justifyContent: 'center', width: '100%', padding: '16px' }}>
-                                {t("nav.join")}
-                            </Link>
+                <>
+                    <div onClick={close} style={{ position: 'fixed', inset: 0, top: 'var(--header-height)', backgroundColor: 'rgba(58, 11, 28, 0.25)', zIndex: 1 }} />
+                    <nav id="site-menu" className="menu-panel">
+                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            {links.map(link => (
+                                <li key={link.href}>
+                                    <Link href={link.href} onClick={close} className="menu-link">
+                                        {link.label} <ArrowUpRight size={22} />
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                        <hr style={{ border: 'none', borderTop: '1.5px solid var(--border)', margin: '16px 0' }} />
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', justifyContent: 'space-between' }}>
+                            {user ? (
+                                <Link href="/dashboard" onClick={close} className="primary-button">
+                                    <User size={18} /> {user.user_metadata?.full_name || t("nav.myPage")}
+                                </Link>
+                            ) : (
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                    <Link href="/liity" onClick={close} className="primary-button">{t("nav.join")}</Link>
+                                    <Link href="/kirjaudu" onClick={close} style={{ fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '4px' }}>{t("nav.login")}</Link>
+                                </div>
+                            )}
+                            <LanguageSwitcher />
                         </div>
-                    )}
-                </div>
+                    </nav>
+                </>
             )}
         </header>
     );

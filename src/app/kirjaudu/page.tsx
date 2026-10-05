@@ -38,7 +38,7 @@ export default function LoginPage() {
     };
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
 
             <div className="container" style={{ maxWidth: '400px', padding: '80px 24px' }}>

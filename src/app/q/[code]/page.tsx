@@ -37,7 +37,7 @@ export default function TagPage({ params }: { params: Promise<{ code: string }> 
     }, [code]);
 
     return (
-        <main style={{ backgroundColor: '#fcfcfc', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <Header />
             <div className="container" style={{ maxWidth: '560px', padding: '48px 24px 80px' }}>
                 {bike === undefined ? (

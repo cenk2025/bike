@@ -5,6 +5,7 @@ import Stats from "@/components/Stats";
 import BikeSearch from "@/components/BikeSearch";
 import RecentlyLost from "@/components/RecentlyLost";
 import FeaturedSections from "@/components/FeaturedSections";
+import HowItWorks from "@/components/home/HowItWorks";
 
 export default function Home() {
   const jsonLd = {
@@ -33,12 +34,15 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Header />
-      <div className="container" style={{ paddingTop: '20px', paddingBottom: '60px' }}>
-        <Hero />
+      <Hero />
+      <div className="shell-section" style={{ paddingBottom: '60px' }}>
+        <HowItWorks />
         <BikeSearch />
         <Stats />
         <RecentlyLost />
-        <FeaturedSections />
+        <div className="container">
+          <FeaturedSections />
+        </div>
       </div>
       <Footer />
     </main>
