@@ -286,7 +286,7 @@ function SlotEditor({
                         <img
                             src={slot.image_url}
                             alt={slot.title}
-                            style={{ width: "100%", maxHeight: "260px", objectFit: "cover", display: "block" }}
+                            style={{ width: "100%", height: "auto", maxHeight: "260px", objectFit: "contain", display: "block" }}
                         />
                         <button
                             type="button"

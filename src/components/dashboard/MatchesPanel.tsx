@@ -100,8 +100,10 @@ export default function MatchesPanel({ onBikeRecovered }: { onBikeRecovered?: ()
                         <div key={m.match_id} className="card" style={{ padding: 0, overflow: 'hidden', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
                             <div style={{ minHeight: '180px', backgroundColor: '#f0f0f0' }}>
                                 {m.other_image_url ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={m.other_image_url} alt={otherTitle} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <a href={m.other_image_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', height: '100%' }}>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={m.other_image_url} alt={otherTitle} style={{ width: '100%', height: '100%', maxHeight: '420px', objectFit: 'contain', backgroundColor: '#efe6d6' }} />
+                                    </a>
                                 ) : (
                                     <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb', fontSize: '11px', fontWeight: 700 }}>{t("common.noImage")}</div>
                                 )}

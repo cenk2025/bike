@@ -26,7 +26,7 @@ export default function SponsorCard({ ad, tint = colors.lavender }: { ad: AdSlot
             <View style={styles.tag}>
                 <T style={styles.tagText}>{t("m.sponsored").toUpperCase()}</T>
             </View>
-            {ad.image_url && <Image source={{ uri: ad.image_url }} style={styles.image} contentFit="cover" />}
+            {ad.image_url && <Image source={{ uri: ad.image_url }} style={styles.image} contentFit="contain" />}
             {ad.eyebrow && <T variant="label" style={{ color: colors.maroon, opacity: 0.7 }}>{ad.eyebrow}</T>}
             <T variant="heading">{ad.title}</T>
             {ad.description && <T variant="muted" numberOfLines={3} style={{ color: colors.maroon }}>{ad.description}</T>}
@@ -44,5 +44,5 @@ const styles = StyleSheet.create({
     card: { borderRadius: radius.lg, padding: 18, gap: 6, borderWidth: 2, borderColor: colors.maroon },
     tag: { alignSelf: "flex-start", backgroundColor: colors.maroon, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2, marginBottom: 4 },
     tagText: { color: colors.cream, fontSize: 10, letterSpacing: 0.8, fontWeight: "700" },
-    image: { height: 120, borderRadius: radius.md, marginVertical: 4 }
+    image: { width: "100%", aspectRatio: 16 / 9, borderRadius: radius.md, marginVertical: 4, backgroundColor: "rgba(255,255,255,0.5)" }
 });

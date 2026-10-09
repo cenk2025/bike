@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
 import { bikeTitle, formatRelativeTime, type PublicBike } from "@shared/lib/bikes";
@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { colors, radius } from "@/lib/theme";
 import ContactForm from "@/components/ContactForm";
+import PhotoViewer from "@/components/PhotoViewer";
 import { Card, Icon, StatusBadge, T } from "@/components/ui";
 
 export default function BikeDetailScreen() {
@@ -14,6 +15,10 @@ export default function BikeDetailScreen() {
     const { t, tv, locale } = useI18n();
     const [bike, setBike] = useState<PublicBike | null | undefined>(undefined);
     const { width } = useWindowDimensions();
+    // Height follows the first photo's aspect ratio so the whole picture fits.
+    const [aspect, setAspect] = useState(4 / 3);
+    const [page, setPage] = useState(0);
+    const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
     useEffect(() => {
         supabase.from("bikes_public").select("*").eq("id", id).maybeSingle()
@@ -26,19 +31,39 @@ export default function BikeDetailScreen() {
     const title = bikeTitle(bike, t("card.unknownBike"));
     const images = bike.images?.length ? bike.images : bike.image_url ? [bike.image_url] : [];
     const canContact = bike.status === "varastettu" || bike.status === "ilmoitettu";
+    const heroHeight = Math.min(Math.max(width / aspect, 240), width * 1.25);
 
     return (
         <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }} keyboardVerticalOffset={60}>
             <ScrollView contentContainerStyle={{ paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
                 <View style={styles.hero}>
                     {images.length > 0 ? (
-                        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
-                            {images.map(uri => (
-                                <Image key={uri} source={{ uri }} style={[styles.heroImage, { width }]} contentFit="cover" transition={200} />
-                            ))}
-                        </ScrollView>
+                        <>
+                            <ScrollView
+                                horizontal
+                                pagingEnabled
+                                showsHorizontalScrollIndicator={false}
+                                onMomentumScrollEnd={e => setPage(Math.round(e.nativeEvent.contentOffset.x / width))}
+                            >
+                                {images.map((uri, i) => (
+                                    <Pressable key={uri} onPress={() => setViewerIndex(i)} accessibilityRole="imagebutton" accessibilityLabel={title}>
+                                        <Image
+                                            source={{ uri }}
+                                            style={{ width, height: heroHeight }}
+                                            contentFit="contain"
+                                            transition={200}
+                                            onLoad={i === 0 ? e => e.source.height > 0 && setAspect(e.source.width / e.source.height) : undefined}
+                                        />
+                                    </Pressable>
+                                ))}
+                            </ScrollView>
+                            <View style={styles.heroBadge} pointerEvents="none">
+                                <Icon name="arrow.up.left.and.arrow.down.right" size={13} color="#fff" />
+                                {images.length > 1 && <T style={styles.heroBadgeText}>{page + 1}/{images.length}</T>}
+                            </View>
+                        </>
                     ) : (
-                        <View style={[styles.heroImage, { width, alignItems: "center", justifyContent: "center" }]}>
+                        <View style={[styles.heroEmpty, { width }]}>
                             <Icon name="bicycle" size={72} color="#c9b8a6" />
                             <T variant="label">{t("common.noImage")}</T>
                         </View>
@@ -81,6 +106,7 @@ export default function BikeDetailScreen() {
                     )}
                 </View>
             </ScrollView>
+            <PhotoViewer images={images} index={viewerIndex} onClose={() => setViewerIndex(null)} />
         </KeyboardAvoidingView>
     );
 }
@@ -95,6 +121,11 @@ function Info({ icon, text }: { icon: Parameters<typeof Icon>[0]["name"]; text: 
 }
 
 const styles = StyleSheet.create({
-    hero: { backgroundColor: "#f3ece0", borderBottomLeftRadius: radius.lg, borderBottomRightRadius: radius.lg, overflow: "hidden" },
-    heroImage: { height: 340, backgroundColor: "#f3ece0" }
+    hero: { backgroundColor: "#efe6d6", borderBottomLeftRadius: radius.lg, borderBottomRightRadius: radius.lg, overflow: "hidden" },
+    heroEmpty: { height: 260, alignItems: "center", justifyContent: "center", gap: 6 },
+    heroBadge: {
+        position: "absolute", right: 14, bottom: 14, flexDirection: "row", alignItems: "center", gap: 6,
+        backgroundColor: "rgba(58,11,28,0.7)", paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999
+    },
+    heroBadgeText: { color: "#fff", fontSize: 12, fontWeight: "700" }
 });

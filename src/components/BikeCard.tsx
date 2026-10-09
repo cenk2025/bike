@@ -23,11 +23,43 @@ function BikeImage({ src, alt, height, iconSize }: { src: string | null; alt: st
     );
 }
 
+/** Detail-view gallery: the whole photo is always visible, thumbnails switch photos. */
+function Gallery({ images, alt }: { images: string[]; alt: string }) {
+    const [index, setIndex] = useState(0);
+    const current = images[Math.min(index, images.length - 1)];
+    return (
+        <div style={{ backgroundColor: '#efe6d6' }}>
+            <a href={current} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }} title={alt}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={current} alt={alt} style={{ display: 'block', width: '100%', height: 'auto', maxHeight: '60vh', objectFit: 'contain' }} />
+            </a>
+            {images.length > 1 && (
+                <div style={{ display: 'flex', gap: '8px', padding: '10px', overflowX: 'auto' }}>
+                    {images.map((src, i) => (
+                        <button
+                            key={src}
+                            type="button"
+                            onClick={() => setIndex(i)}
+                            aria-label={`${alt} ${i + 1}`}
+                            aria-pressed={i === index}
+                            style={{ flexShrink: 0, width: '64px', height: '64px', borderRadius: '10px', overflow: 'hidden', padding: 0, border: i === index ? '3px solid var(--maroon)' : '1px solid var(--border)' }}
+                        >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function BikeCard({ bike }: { bike: PublicBike }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { t, tv, locale } = useI18n();
     const title = bikeTitle(bike, t("card.unknownBike"));
     const status = statusStyle(bike.status);
+    const photos = bike.images?.length ? bike.images : bike.image_url ? [bike.image_url] : [];
     const statusLabel = tv("status", bike.status);
     const location = bike.location || bike.city || t("card.unknownLocation");
     const time = formatRelativeTime(bike.created_at, t);
@@ -99,7 +131,9 @@ export default function BikeCard({ bike }: { bike: PublicBike }) {
                             <X size={20} />
                         </button>
 
-                        <BikeImage src={bike.image_url} alt={title} height="250px" iconSize={64} />
+                        {photos.length > 0
+                            ? <Gallery images={photos} alt={title} />
+                            : <BikeImage src={null} alt={title} height="250px" iconSize={64} />}
 
                         <div style={{ padding: '32px' }}>
                             <div style={{ marginBottom: '24px' }}>

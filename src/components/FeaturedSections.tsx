@@ -85,7 +85,7 @@ export default function FeaturedSections() {
                     <img
                         src={insurance.image_url}
                         alt={insurance.title}
-                        style={{ width: '100%', maxHeight: '320px', objectFit: 'cover', borderRadius: '16px' }}
+                        style={{ width: '100%', height: 'auto', maxHeight: '320px', objectFit: 'contain', borderRadius: '16px' }}
                     />
                 )}
 
@@ -185,7 +185,7 @@ export default function FeaturedSections() {
                         <img
                             src={premium.image_url}
                             alt={premium.title}
-                            style={{ width: '100%', maxHeight: '320px', objectFit: 'cover', borderRadius: '16px', marginBottom: '24px' }}
+                            style={{ width: '100%', height: 'auto', maxHeight: '320px', objectFit: 'contain', borderRadius: '16px', marginBottom: '24px' }}
                         />
                     )}
 

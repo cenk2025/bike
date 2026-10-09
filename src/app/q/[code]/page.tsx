@@ -63,7 +63,7 @@ export default function TagPage({ params }: { params: Promise<{ code: string }> 
                         <div className="card" style={{ padding: 0, overflow: 'hidden', marginBottom: '24px' }}>
                             {bike.image_url && (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={bike.image_url} alt={bikeTitle(bike, t("card.unknownBike"))} style={{ width: '100%', height: '220px', objectFit: 'cover' }} />
+                                <img src={bike.image_url} alt={bikeTitle(bike, t("card.unknownBike"))} style={{ display: 'block', width: '100%', height: 'auto', maxHeight: '60vh', objectFit: 'contain', backgroundColor: '#efe6d6' }} />
                             )}
                             <div style={{ padding: '20px' }}>
                                 <h2 style={{ fontSize: '20px', fontWeight: 700 }}>{bikeTitle(bike, t("card.unknownBike"))}</h2>
