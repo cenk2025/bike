@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Deno code (Supabase Edge Functions) is not part of the Next.js app.
     "supabase/functions/**",
+    // The Expo app has its own lint setup (mobile/eslint.config.js).
+    "mobile/**",
     // macOS AppleDouble metadata files that get created on non-HFS volumes.
     "**/._*",
   ]),

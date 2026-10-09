@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "BikeBack",
+    "slug": "bikeback",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "fi.voon.bikeback",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FDF8E4",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "fi.voon.bikeback"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-sqlite",
+      "expo-image",
+      "expo-localization",
+      "expo-font",
+      "@react-native-community/datetimepicker",
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "BikeBack k\u00e4ytt\u00e4\u00e4 kuviasi, jotta voit lis\u00e4t\u00e4 py\u00f6r\u00e4n kuvia ilmoitukseen. / BikeBack uses your photos so you can add bike pictures to a report.",
+          "cameraPermission": "BikeBack k\u00e4ytt\u00e4\u00e4 kameraa py\u00f6r\u00e4n ja sarjanumeron kuvaamiseen. / BikeBack uses the camera to photograph the bike and its serial number."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FDF8E4",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160
+        }
+      ]
+    ],
+    "scheme": "bikeback",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
