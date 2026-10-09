@@ -22,7 +22,7 @@ export default function ReportScreen() {
 
     return (
         <ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: 40 }} contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: colors.cream }}>
-            <T variant="hero" style={{ fontSize: 44, lineHeight: 46, marginTop: 8 }}>{t("tab.report")}</T>
+            <T variant="hero" style={{ fontSize: 44, lineHeight: 50, marginTop: 28 }}>{t("tab.report")}</T>
             <T variant="muted">{t("m.reportTitle")}</T>
 
             <Option

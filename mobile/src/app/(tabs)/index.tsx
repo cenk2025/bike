@@ -185,14 +185,14 @@ function QuickAction({ icon, label, color, onPress }: { icon: Parameters<typeof 
 function Stat({ value, label }: { value: string; label: string }) {
     return (
         <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
-            <T style={{ fontFamily: fonts.display, fontSize: 26 }}>{value}</T>
+            <T style={{ fontFamily: fonts.display, fontSize: 26, lineHeight: 34 }}>{value}</T>
             <T variant="small" style={{ textAlign: "center", fontSize: 10, letterSpacing: 0.4 }} numberOfLines={2}>{label}</T>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    brandRow: { flexDirection: "row", alignItems: "center", marginTop: 4 },
+    brandRow: { flexDirection: "row", alignItems: "center", marginTop: 28 },
     search: {
         flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 16, height: 54,
         backgroundColor: colors.surface, borderRadius: radius.pill, borderWidth: 2, borderColor: colors.maroon

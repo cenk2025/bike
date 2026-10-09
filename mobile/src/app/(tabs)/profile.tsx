@@ -31,7 +31,7 @@ export default function ProfileScreen() {
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 22, paddingBottom: 48 }} contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: colors.cream }}>
+        <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 44, gap: 22, paddingBottom: 48 }} contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: colors.cream }}>
             {session ? <SignedIn /> : (
                 <Card style={{ alignItems: "center", gap: 10, paddingVertical: 26 }}>
                     <RadarLogo size={56} />
@@ -88,7 +88,7 @@ function SignedIn() {
     return (
         <View style={{ gap: 22 }}>
             <View>
-                <T variant="hero" style={{ fontSize: 40, lineHeight: 44 }}>{t("dash.hello", { name })}</T>
+                <T variant="hero" style={{ fontSize: 40, lineHeight: 48 }}>{t("dash.hello", { name })}</T>
                 <T variant="muted">{session!.user.email}</T>
             </View>
 

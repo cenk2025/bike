@@ -12,8 +12,8 @@ import { useI18n } from "@/lib/i18n";
 type Variant = "hero" | "title" | "heading" | "body" | "muted" | "small" | "label";
 
 const textStyles = StyleSheet.create({
-    hero: { fontFamily: fonts.display, fontSize: 52, lineHeight: 54, color: colors.maroon, textTransform: "uppercase", letterSpacing: -0.5 },
-    title: { fontFamily: fonts.display, fontSize: 32, lineHeight: 36, color: colors.maroon },
+    hero: { fontFamily: fonts.display, fontSize: 52, lineHeight: 60, color: colors.maroon, textTransform: "uppercase", letterSpacing: -0.5 },
+    title: { fontFamily: fonts.display, fontSize: 32, lineHeight: 40, color: colors.maroon },
     heading: { fontFamily: fonts.displayMedium, fontSize: 21, lineHeight: 26, color: colors.maroon },
     body: { fontFamily: fonts.body, fontSize: 16, lineHeight: 23, color: colors.maroon },
     muted: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.muted },
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         paddingVertical: 14, paddingHorizontal: 24, minHeight: 54
     },
     pillSmall: { paddingVertical: 8, paddingHorizontal: 16, minHeight: 40 },
-    pillText: { fontFamily: fonts.displayMedium, fontSize: 18, color: colors.maroon },
+    pillText: { fontFamily: fonts.displayMedium, fontSize: 18, lineHeight: 24, color: colors.maroon },
     chip: {
         flexDirection: "row", alignItems: "center", gap: 6,
         paddingVertical: 8, paddingHorizontal: 14, borderRadius: radius.pill,
