@@ -23,7 +23,7 @@ function RootStack() {
             }}
         >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="bike/[id]" options={{ title: "" , headerTransparent: true }} />
+            <Stack.Screen name="bike/[id]" options={{ title: "" }} />
             <Stack.Screen name="report/[kind]" options={{ title: "" }} />
             <Stack.Screen name="check" options={{ title: "" }} />
             <Stack.Screen name="auth" options={{ presentation: "modal", title: "" }} />
