@@ -3,9 +3,9 @@ import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { bikeTitle } from "@shared/lib/bikes";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
-import { colors } from "@/lib/theme";
+import { colors, fonts } from "@/lib/theme";
 import SponsorCard, { type AdSlot } from "@/components/SponsorCard";
-import { Card, ErrorBox, Field, Icon, PillButton, T } from "@/components/ui";
+import { Card, ErrorBox, Field, Icon, Button, T } from "@/components/ui";
 
 interface Result {
     status: "varastettu" | "ilmoitettu" | "rekisteröity";
@@ -52,19 +52,19 @@ export default function CheckScreen() {
 
                 <Field placeholder={t("check.placeholder")} value={serial} onChangeText={setSerial} autoCapitalize="characters"
                     autoCorrect={false} returnKeyType="search" onSubmitEditing={check} accessibilityLabel={t("check.aria")} />
-                <PillButton title={loading ? t("check.checking") : t("check.button")} icon="magnifyingglass" onPress={check} loading={loading} />
+                <Button title={loading ? t("check.checking") : t("check.button")} icon="magnifyingglass" onPress={check} loading={loading} />
                 {error && <ErrorBox message={error} />}
 
                 {checked && !loading && (
                     stolen ? (
                         <ResultCard icon="exclamationmark.octagon.fill" color="#c62828" bg="#fff1f1" title={t("check.stolenTitle")}>
-                            <T style={{ fontWeight: "700" }}>
+                            <T style={{ fontFamily: fonts.bold }}>
                                 {bikeTitle(stolen, unknown)}
                                 {[tv("type", stolen.type), tv("color", stolen.color)].filter(Boolean).length > 0 && ` (${[tv("type", stolen.type), tv("color", stolen.color)].filter(Boolean).join(", ")})`}
                                 {stolen.city ? `, ${stolen.city}` : ""}
                             </T>
                             {stolen.event_date && <T>{t("check.stolenOn", { date: new Date(stolen.event_date).toLocaleDateString(locale) })}</T>}
-                            <T><T style={{ fontWeight: "700" }}>{t("check.dontBuy")}</T> {t("check.dontBuyText")}</T>
+                            <T><T style={{ fontFamily: fonts.bold }}>{t("check.dontBuy")}</T> {t("check.dontBuyText")}</T>
                         </ResultCard>
                     ) : registered ? (
                         <ResultCard icon="info.circle.fill" color="#6a1b9a" bg="#f6edfc" title={t("check.registeredTitle")}>
@@ -85,13 +85,13 @@ export default function CheckScreen() {
                     <T variant="heading">{t("check.tipsTitle")}</T>
                     {(["check.tip1", "check.tip2", "check.tip3", "check.tip4", "check.tip5"] as const).map(k => (
                         <View key={k} style={{ flexDirection: "row", gap: 8 }}>
-                            <Icon name="checkmark.circle.fill" size={16} color={colors.raspberry} />
+                            <Icon name="checkmark.circle.fill" size={16} color={colors.accent} />
                             <T style={{ flex: 1 }}>{t(k)}</T>
                         </View>
                     ))}
                 </Card>
 
-                {ad && <SponsorCard ad={ad} tint={colors.mint} />}
+                {ad && <SponsorCard ad={ad} />}
             </ScrollView>
         </KeyboardAvoidingView>
     );

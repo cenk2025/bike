@@ -4,11 +4,10 @@ import { router } from "expo-router";
 import type { PublicBike } from "@shared/lib/bikes";
 import { supabase } from "@/lib/supabase";
 import { useI18n, type Key } from "@/lib/i18n";
-import { colors, fonts, radius } from "@/lib/theme";
-import BikeRow from "@/components/BikeRow";
+import { colors, fonts, radius, shadow } from "@/lib/theme";
+import BikeCard from "@/components/BikeCard";
 import SponsorCard, { type AdSlot } from "@/components/SponsorCard";
-import RadarLogo from "@/components/RadarLogo";
-import { Chip, Icon, T } from "@/components/ui";
+import { Chip, Icon, IconTile, T } from "@/components/ui";
 
 type Filter = { key: Key; match: (b: PublicBike) => boolean };
 const FILTERS: Filter[] = [
@@ -19,9 +18,8 @@ const FILTERS: Filter[] = [
     { key: "recent.motor", match: b => b.type === "Moottoripyörä" || b.type === "Mopo" }
 ];
 
-type Item = { kind: "bike"; bike: PublicBike } | { kind: "ad"; ad: AdSlot; tint: string };
-const AD_EVERY = 5;
-const AD_TINTS = [colors.lavender, colors.mint, colors.pink];
+type Row = { kind: "pair"; bikes: PublicBike[] } | { kind: "ad"; ad: AdSlot };
+const AD_EVERY = 3; // rows of two bikes between sponsor cards
 
 interface Stats { recovered: number; stolen_active: number; found_reports: number; matches: number }
 
@@ -67,20 +65,16 @@ export default function SearchScreen() {
         ? (results?.q === q ? results.bikes : [])
         : latest.filter(FILTERS.find(f => f.key === filter)!.match), [searching, results, q, latest, filter]);
 
-    // Interleave clearly-labelled sponsor cards into the feed.
-    const items = useMemo<Item[]>(() => {
-        const out: Item[] = [];
-        bikes.forEach((bike, i) => {
-            out.push({ kind: "bike", bike });
-            const n = i + 1;
-            if (ads.length && n % AD_EVERY === 0) {
-                const k = n / AD_EVERY - 1;
-                out.push({ kind: "ad", ad: ads[k % ads.length], tint: AD_TINTS[k % AD_TINTS.length] });
-            }
-        });
-        if (ads.length && bikes.length > 0 && bikes.length < AD_EVERY) {
-            out.push({ kind: "ad", ad: ads[0], tint: AD_TINTS[0] });
+    // Two-column grid, with a clearly-labelled sponsor card every few rows.
+    const rows = useMemo<Row[]>(() => {
+        const out: Row[] = [];
+        let pairs = 0;
+        for (let i = 0; i < bikes.length; i += 2) {
+            out.push({ kind: "pair", bikes: bikes.slice(i, i + 2) });
+            pairs++;
+            if (ads.length && pairs % AD_EVERY === 0) out.push({ kind: "ad", ad: ads[(pairs / AD_EVERY - 1) % ads.length] });
         }
+        if (ads.length && pairs > 0 && pairs < AD_EVERY) out.push({ kind: "ad", ad: ads[0] });
         return out;
     }, [bikes, ads]);
 
@@ -93,14 +87,13 @@ export default function SearchScreen() {
     const fmt = (n?: number) => (n === undefined ? "–" : n.toLocaleString(locale));
 
     const header = (
-        <View style={{ gap: 18, paddingBottom: 8 }}>
-            <View style={styles.brandRow}>
-                <View style={{ flex: 1 }}>
-                    <T variant="hero">BikeBack</T>
-                    <T variant="heading" style={{ marginTop: 2 }}>{t("hero.tagline")}</T>
-                </View>
-                <RadarLogo size={52} />
+        <View style={{ gap: 22, paddingBottom: 4 }}>
+            <View style={styles.topBar}>
+                <View style={styles.logo}><Icon name="bicycle" size={18} color={colors.white} /></View>
+                <T style={styles.brand}>BikeBack</T>
             </View>
+
+            <T variant="hero">{t("m.homeTitle")}</T>
 
             <View style={styles.search}>
                 <Icon name="magnifyingglass" size={18} color={colors.muted} />
@@ -108,7 +101,7 @@ export default function SearchScreen() {
                     value={query}
                     onChangeText={setQuery}
                     placeholder={t("m.searchPlaceholder")}
-                    placeholderTextColor="#a8919a"
+                    placeholderTextColor={colors.muted}
                     style={styles.searchInput}
                     returnKeyType="search"
                     autoCorrect={false}
@@ -119,11 +112,6 @@ export default function SearchScreen() {
 
             {!searching && (
                 <>
-                    <View style={{ flexDirection: "row", gap: 10 }}>
-                        <QuickAction icon="hand.raised.fill" label={t("m.found")} color={colors.pink} onPress={() => router.push("/report/found")} />
-                        <QuickAction icon="barcode.viewfinder" label={t("m.check")} color={colors.lavender} onPress={() => router.push("/check")} />
-                    </View>
-
                     <View style={styles.stats}>
                         <Stat value={fmt(stats?.recovered)} label={t("stats.recovered")} />
                         <View style={styles.statDivider} />
@@ -132,8 +120,20 @@ export default function SearchScreen() {
                         <Stat value={fmt(stats?.matches)} label={t("stats.matches")} />
                     </View>
 
-                    <View style={{ gap: 10 }}>
-                        <T variant="title">{t("recent.title")}</T>
+                    <View style={{ gap: 12 }}>
+                        <T variant="section">{t("m.quick")}</T>
+                        <View style={styles.grid}>
+                            <QuickAction icon="hand.raised.fill" label={t("m.found")} color={colors.accent} onPress={() => router.push("/report/found")} />
+                            <QuickAction icon="barcode.viewfinder" label={t("m.check")} color={colors.indigo} onPress={() => router.push("/check")} />
+                        </View>
+                        <View style={styles.grid}>
+                            <QuickAction icon="exclamationmark.triangle.fill" label={t("m.stolen")} color={colors.purple} onPress={() => router.push("/report")} />
+                            <QuickAction icon="map.fill" label={t("tab.map")} color={colors.teal} onPress={() => router.push("/map")} />
+                        </View>
+                    </View>
+
+                    <View style={{ gap: 12 }}>
+                        <T variant="section">{t("recent.title")}</T>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
                             {FILTERS.map(f => <Chip key={f.key} label={t(f.key)} active={filter === f.key} onPress={() => setFilter(f.key)} />)}
                         </ScrollView>
@@ -151,56 +151,61 @@ export default function SearchScreen() {
 
     return (
         <FlatList
-            data={items}
-            keyExtractor={(item, i) => (item.kind === "bike" ? `b${item.bike.id}` : `a${item.ad.slug}${i}`)}
-            renderItem={({ item }) => item.kind === "bike" ? <BikeRow bike={item.bike} /> : <SponsorCard ad={item.ad} tint={item.tint} />}
+            data={rows}
+            keyExtractor={(row, i) => (row.kind === "pair" ? `p${row.bikes[0].id}` : `a${row.ad.slug}${i}`)}
+            renderItem={({ item }) => item.kind === "ad" ? <SponsorCard ad={item.ad} /> : (
+                <View style={styles.grid}>
+                    <BikeCard bike={item.bikes[0]} />
+                    {item.bikes[1] ? <BikeCard bike={item.bikes[1]} /> : <View style={{ flex: 1 }} />}
+                </View>
+            )}
             ListHeaderComponent={header}
             ListEmptyComponent={
                 <View style={{ alignItems: "center", padding: 32, gap: 8 }}>
-                    <Icon name="bicycle" size={36} color="#c9b8a6" />
+                    <Icon name="bicycle" size={36} color={colors.faint} />
                     <T variant="muted" style={{ textAlign: "center" }}>
                         {searching ? t("search.none", { q }) : t("recent.empty")}
                     </T>
                 </View>
             }
-            contentContainerStyle={{ padding: 18, gap: 12, paddingBottom: 40 }}
+            contentContainerStyle={{ padding: 20, gap: 14, paddingBottom: 40 }}
             contentInsetAdjustmentBehavior="automatic"
             keyboardDismissMode="on-drag"
             keyboardShouldPersistTaps="handled"
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.raspberry} />}
-            style={{ backgroundColor: colors.cream }}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
+            style={{ backgroundColor: colors.bg }}
         />
     );
 }
 
 function QuickAction({ icon, label, color, onPress }: { icon: Parameters<typeof Icon>[0]["name"]; label: string; color: string; onPress: () => void }) {
     return (
-        <Pressable onPress={onPress} style={({ pressed }) => [styles.quick, { backgroundColor: color }, pressed && { transform: [{ scale: 0.97 }] }]} accessibilityRole="button">
-            <View style={styles.quickIcon}><Icon name={icon} size={20} /></View>
-            <T style={styles.quickLabel}>{label}</T>
+        <Pressable onPress={onPress} style={({ pressed }) => [styles.quick, pressed && { transform: [{ scale: 0.97 }] }]} accessibilityRole="button">
+            <IconTile name={icon} color={color} size={40} />
+            <T style={styles.quickLabel} numberOfLines={2}>{label}</T>
         </Pressable>
     );
 }
 
 function Stat({ value, label }: { value: string; label: string }) {
     return (
-        <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
-            <T style={{ fontFamily: fonts.display, fontSize: 26, lineHeight: 34 }}>{value}</T>
-            <T variant="small" style={{ textAlign: "center", fontSize: 10, letterSpacing: 0.4 }} numberOfLines={2}>{label}</T>
+        <View style={{ flex: 1, gap: 2 }}>
+            <T style={styles.statValue}>{value}</T>
+            <T variant="small" style={{ fontSize: 11, lineHeight: 14 }} numberOfLines={2}>{label.charAt(0) + label.slice(1).toLowerCase()}</T>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    brandRow: { flexDirection: "row", alignItems: "center", marginTop: 28 },
-    search: {
-        flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 16, height: 54,
-        backgroundColor: colors.surface, borderRadius: radius.pill, borderWidth: 2, borderColor: colors.maroon
-    },
-    searchInput: { flex: 1, fontSize: 16, fontFamily: fonts.body, color: colors.maroon },
-    quick: { flex: 1, borderRadius: radius.lg, padding: 14, gap: 10, borderWidth: 2, borderColor: colors.maroon, minHeight: 104, justifyContent: "space-between" },
-    quickIcon: { width: 38, height: 38, borderRadius: 19, backgroundColor: "rgba(255,255,255,0.6)", alignItems: "center", justifyContent: "center" },
-    quickLabel: { fontFamily: fonts.displayMedium, fontSize: 18, lineHeight: 21 },
-    stats: { flexDirection: "row", alignItems: "center", backgroundColor: colors.surface, borderRadius: radius.lg, paddingVertical: 14, paddingHorizontal: 8, borderWidth: 1.5, borderColor: colors.border },
-    statDivider: { width: 1, alignSelf: "stretch", backgroundColor: colors.border }
+    topBar: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 8 },
+    logo: { width: 32, height: 32, borderRadius: 10, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center" },
+    brand: { fontFamily: fonts.bold, fontSize: 18, letterSpacing: -0.2 },
+    search: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 16, height: 52, backgroundColor: colors.field, borderRadius: radius.md },
+    searchInput: { flex: 1, fontSize: 16, fontFamily: fonts.regular, color: colors.text },
+    grid: { flexDirection: "row", gap: 14 },
+    quick: { flex: 1, flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: colors.surface, borderRadius: radius.md, padding: 12, minHeight: 66, ...shadow },
+    quickLabel: { flex: 1, fontFamily: fonts.medium, fontSize: 14, lineHeight: 18 },
+    stats: { flexDirection: "row", gap: 14 },
+    statValue: { fontFamily: fonts.bold, fontSize: 26, lineHeight: 32, color: colors.text },
+    statDivider: { width: 1, alignSelf: "stretch", backgroundColor: colors.border, marginVertical: 4 }
 });

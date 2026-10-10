@@ -11,8 +11,8 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { uploadBikePhoto } from "@/lib/upload";
 import { COLOR_HEX } from "@/lib/colors";
-import { colors, radius } from "@/lib/theme";
-import { Card, Chip, ErrorBox, Field, Icon, PillButton, T } from "@/components/ui";
+import { colors, fonts, radius } from "@/lib/theme";
+import { Card, Chip, ErrorBox, Field, Icon, Button, T } from "@/components/ui";
 
 type Kind = "stolen" | "register" | "found";
 const MAX_PHOTOS = 4;
@@ -185,7 +185,7 @@ export default function ReportFormScreen() {
                     {kind !== "register" && (
                         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                             <T variant="label">{found ? t("found.date") : t("theft.dateStolen")}</T>
-                            <DateTimePicker value={date} mode="date" display="compact" maximumDate={new Date()} accentColor={colors.raspberry}
+                            <DateTimePicker value={date} mode="date" display="compact" maximumDate={new Date()} accentColor={colors.accent}
                                 onValueChange={(_e, d) => d && setDate(d)} />
                         </View>
                     )}
@@ -202,7 +202,7 @@ export default function ReportFormScreen() {
                         hint={found ? t("found.emailHint") : t("theft.contactPrivacy")} />
                 </Card>
 
-                <PillButton
+                <Button
                     title={found ? t("found.submit") : stolen ? t("theft.submitStolen") : t("theft.submitRegister")}
                     icon="paperplane.fill"
                     onPress={submit}
@@ -225,17 +225,17 @@ export default function ReportFormScreen() {
 function PhotoButton({ icon, label, onPress, busy }: { icon: Parameters<typeof Icon>[0]["name"]; label: string; onPress: () => void; busy: boolean }) {
     return (
         <Pressable onPress={onPress} disabled={busy} style={({ pressed }) => [styles.photoButton, (pressed || busy) && { opacity: 0.6 }]} accessibilityRole="button">
-            {busy ? <ActivityIndicator color={colors.maroon} /> : <Icon name={icon} size={24} />}
-            <T variant="small" style={{ color: colors.maroon, textAlign: "center", fontWeight: "600" }}>{label}</T>
+            {busy ? <ActivityIndicator color={colors.text} /> : <Icon name={icon} size={24} />}
+            <T variant="small" style={{ color: colors.text, textAlign: "center", fontFamily: fonts.semibold }}>{label}</T>
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
     photo: { width: 96, height: 96, borderRadius: radius.md },
-    remove: { position: "absolute", top: -6, right: -6, width: 24, height: 24, borderRadius: 12, backgroundColor: colors.red, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#fff" },
+    remove: { position: "absolute", top: -6, right: -6, width: 24, height: 24, borderRadius: 12, backgroundColor: colors.accent, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#fff" },
     photoButton: {
-        width: 96, height: 96, borderRadius: radius.md, borderWidth: 2, borderStyle: "dashed", borderColor: colors.maroon,
+        width: 96, height: 96, borderRadius: radius.md, borderWidth: 1.5, borderStyle: "dashed", borderColor: colors.faint,
         alignItems: "center", justifyContent: "center", gap: 6, padding: 6, backgroundColor: colors.surface
     }
 });

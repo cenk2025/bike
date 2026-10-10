@@ -41,7 +41,14 @@ const fi = {
     "m.deleteConfirm": "Tili ja kaikki ilmoituksesi poistetaan pysyvästi. Jatketaanko?",
     "m.deleted": "Tili on poistettu.",
     "m.noMatches": "Ei osumia vielä. Ilmoitamme heti, kun löytöilmoitus vastaa pyörääsi.",
-    "m.cityReports": "{n} ilmoitusta"
+    "m.cityReports": "{n} ilmoitusta",
+    "m.quick": "Pikatoiminnot",
+    "m.stolen": "Pyöräni varastettiin",
+    "m.type": "Tyyppi",
+    "m.color": "Väri",
+    "m.city": "Kaupunki",
+    "m.reported": "Ilmoitettu",
+    "m.contact": "Ota yhteyttä"
 };
 
 export type MobileKey = keyof typeof fi;
@@ -87,7 +94,14 @@ const sv: Strings = {
     "m.deleteConfirm": "Kontot och alla dina anmälningar raderas permanent. Fortsätta?",
     "m.deleted": "Kontot har raderats.",
     "m.noMatches": "Inga träffar ännu. Vi meddelar dig direkt när en fyndanmälan motsvarar din cykel.",
-    "m.cityReports": "{n} anmälningar"
+    "m.cityReports": "{n} anmälningar",
+    "m.quick": "Snabbval",
+    "m.stolen": "Min cykel blev stulen",
+    "m.type": "Typ",
+    "m.color": "Färg",
+    "m.city": "Stad",
+    "m.reported": "Anmäld",
+    "m.contact": "Kontakta"
 };
 
 const en: Strings = {
@@ -130,7 +144,14 @@ const en: Strings = {
     "m.deleteConfirm": "Your account and all your reports will be deleted permanently. Continue?",
     "m.deleted": "Your account has been deleted.",
     "m.noMatches": "No matches yet. We'll tell you as soon as a found report matches your bike.",
-    "m.cityReports": "{n} reports"
+    "m.cityReports": "{n} reports",
+    "m.quick": "Quick actions",
+    "m.stolen": "My bike was stolen",
+    "m.type": "Type",
+    "m.color": "Colour",
+    "m.city": "City",
+    "m.reported": "Reported",
+    "m.contact": "Get in touch"
 };
 
 export const MOBILE_STRINGS = { fi, sv, en };

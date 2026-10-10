@@ -28,19 +28,19 @@ export default function RadarLogo({ size = 64 }: { size?: number }) {
                     key={i}
                     style={[styles.ring, {
                         width: size, height: size, borderRadius: size / 2,
-                        opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.7, 0] }),
+                        opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.35, 0] }),
                         transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 2.2] }) }]
                     }]}
                 />
             ))}
             <View style={[styles.badge, { width: size, height: size, borderRadius: size / 2 }]}>
-                <Icon name="bicycle" size={size * 0.5} />
+                <Icon name="bicycle" size={size * 0.5} color={colors.white} />
             </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    ring: { position: "absolute", borderWidth: 3, borderColor: colors.pink },
-    badge: { backgroundColor: colors.yellow, borderWidth: 2.5, borderColor: colors.maroon, alignItems: "center", justifyContent: "center" }
+    ring: { position: "absolute", borderWidth: 2, borderColor: colors.accent },
+    badge: { backgroundColor: colors.accent, alignItems: "center", justifyContent: "center" }
 });

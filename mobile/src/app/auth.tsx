@@ -3,9 +3,9 @@ import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, View, Pressable } 
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { supabase, WEB_URL } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
-import { colors, radius } from "@/lib/theme";
+import { colors, fonts, radius, shadow } from "@/lib/theme";
 import RadarLogo from "@/components/RadarLogo";
-import { ErrorBox, Field, PillButton, T } from "@/components/ui";
+import { ErrorBox, Field, Button, T } from "@/components/ui";
 
 /**
  * Login / sign-up sheet. Opened when a signed-out user starts a stolen or
@@ -61,7 +61,7 @@ export default function AuthScreen() {
 
     const isLogin = mode === "login";
     return (
-        <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.cream }}>
+        <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.bg }}>
             <ScrollView contentContainerStyle={{ padding: 24, gap: 16 }} keyboardShouldPersistTaps="handled">
                 <View style={{ alignItems: "center" }}><RadarLogo size={56} /></View>
                 <T variant="title" style={{ textAlign: "center" }}>{t(isLogin ? "login.title" : "signup.title")}</T>
@@ -70,7 +70,7 @@ export default function AuthScreen() {
                 <View style={styles.segment}>
                     {(["login", "signup"] as const).map(m => (
                         <Pressable key={m} onPress={() => { setMode(m); setError(null); }} style={[styles.segmentItem, mode === m && styles.segmentActive]}>
-                            <T style={{ fontWeight: "700", textAlign: "center" }}>{t(m === "login" ? "login.submit" : "signup.submit")}</T>
+                            <T style={{ fontFamily: fonts.semibold, textAlign: "center", color: mode === m ? colors.text : colors.muted }}>{t(m === "login" ? "login.submit" : "signup.submit")}</T>
                         </Pressable>
                     ))}
                 </View>
@@ -85,7 +85,7 @@ export default function AuthScreen() {
                 <Field label={t("auth.password")} placeholder="••••••••" value={password} onChangeText={setPassword} secureTextEntry
                     textContentType={isLogin ? "password" : "newPassword"} autoComplete={isLogin ? "current-password" : "new-password"} />
 
-                <PillButton
+                <Button
                     title={t(isLogin ? "login.submit" : "signup.submit")}
                     icon={isLogin ? "arrow.right.circle.fill" : "person.badge.plus"}
                     onPress={submit}
@@ -101,8 +101,8 @@ export default function AuthScreen() {
 }
 
 const styles = StyleSheet.create({
-    segment: { flexDirection: "row", backgroundColor: colors.shell, borderRadius: radius.pill, padding: 4 },
+    segment: { flexDirection: "row", backgroundColor: colors.field, borderRadius: radius.pill, padding: 4 },
     segmentItem: { flex: 1, paddingVertical: 10, borderRadius: radius.pill },
-    segmentActive: { backgroundColor: colors.yellow, borderWidth: 1.5, borderColor: colors.maroon },
-    link: { textAlign: "center", color: colors.raspberry, fontWeight: "700" }
+    segmentActive: { backgroundColor: colors.surface, ...shadow },
+    link: { textAlign: "center", color: colors.accent, fontFamily: fonts.bold }
 });

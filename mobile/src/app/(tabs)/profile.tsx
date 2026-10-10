@@ -8,10 +8,10 @@ import { bikeTitle } from "@shared/lib/bikes";
 import { supabase, WEB_URL } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useI18n, LANGS, type Key } from "@/lib/i18n";
-import { colors, radius } from "@/lib/theme";
+import { colors, fonts, radius } from "@/lib/theme";
 import RadarLogo from "@/components/RadarLogo";
 import SponsorCard, { type AdSlot } from "@/components/SponsorCard";
-import { Card, Chip, Icon, PillButton, StatusBadge, T } from "@/components/ui";
+import { Card, Chip, Icon, Button, StatusBadge, T } from "@/components/ui";
 
 interface MyBike { id: string; brand: string | null; model: string | null; status: string; serial_number: string | null; image_url: string | null }
 interface Match {
@@ -31,17 +31,17 @@ export default function ProfileScreen() {
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 44, gap: 22, paddingBottom: 48 }} contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: colors.cream }}>
+        <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 44, gap: 22, paddingBottom: 48 }} contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: colors.bg }}>
             {session ? <SignedIn /> : (
                 <Card style={{ alignItems: "center", gap: 10, paddingVertical: 26 }}>
                     <RadarLogo size={56} />
                     <T variant="title" style={{ textAlign: "center" }}>{t("m.guestTitle")}</T>
                     <T variant="muted" style={{ textAlign: "center" }}>{t("m.guestText")}</T>
-                    <PillButton title={t("login.submit")} icon="person.crop.circle" onPress={() => router.push("/auth")} style={{ alignSelf: "stretch", marginTop: 6 }} />
+                    <Button title={t("login.submit")} icon="person.crop.circle" onPress={() => router.push("/auth")} style={{ alignSelf: "stretch", marginTop: 6 }} />
                 </Card>
             )}
 
-            {ad && <SponsorCard ad={ad} tint={colors.pink} />}
+            {ad && <SponsorCard ad={ad} />}
             <Settings />
         </ScrollView>
     );
@@ -88,14 +88,14 @@ function SignedIn() {
     return (
         <View style={{ gap: 22 }}>
             <View>
-                <T variant="hero" style={{ fontSize: 40, lineHeight: 48 }}>{t("dash.hello", { name })}</T>
+                <T variant="hero">{t("dash.hello", { name })}</T>
                 <T variant="muted">{session!.user.email}</T>
             </View>
 
             <View style={{ gap: 10 }}>
-                <T variant="title" style={{ fontSize: 26 }}>{t("matches.title", { n: matches.length })}</T>
+                <T variant="section">{t("matches.title", { n: matches.length })}</T>
                 {matches.length === 0 ? <T variant="muted">{t("m.noMatches")}</T> : matches.map(m => (
-                    <Card key={m.match_id} style={{ gap: 10, borderColor: colors.maroon, borderWidth: 2 }}>
+                    <Card key={m.match_id} style={{ gap: 10 }}>
                         {m.my_role === "löytäjä" ? (
                             <>
                                 <T variant="heading">{t("matches.finderTitle", { mine: m.my_bike_label, other: bikeTitle({ brand: m.other_brand, model: m.other_model }) })}</T>
@@ -105,7 +105,7 @@ function SignedIn() {
                             <>
                                 <View style={{ flexDirection: "row", gap: 12 }}>
                                     <View style={styles.matchThumb}>
-                                        {m.other_image_url ? <Image source={{ uri: m.other_image_url }} style={StyleSheet.absoluteFill} contentFit="cover" /> : <Icon name="bicycle" size={28} color="#c9b8a6" />}
+                                        {m.other_image_url ? <Image source={{ uri: m.other_image_url }} style={StyleSheet.absoluteFill} contentFit="cover" /> : <Icon name="bicycle" size={28} color={colors.faint} />}
                                     </View>
                                     <View style={{ flex: 1, gap: 2 }}>
                                         <T variant="small">{t("matches.yourBike", { bike: m.my_bike_label })}</T>
@@ -118,14 +118,14 @@ function SignedIn() {
                                 </View>
                                 {m.match_status === "uusi" ? (
                                     <View style={{ flexDirection: "row", gap: 10 }}>
-                                        <PillButton small title={t("matches.yes")} icon="checkmark" onPress={() => setMatch(m.match_id, "vahvistettu")} style={{ flex: 1 }} />
-                                        <PillButton small title={t("matches.no")} color={colors.surface} onPress={() => setMatch(m.match_id, "hylatty")} style={{ flex: 1 }} />
+                                        <Button small title={t("matches.yes")} icon="checkmark" onPress={() => setMatch(m.match_id, "vahvistettu")} style={{ flex: 1 }} />
+                                        <Button small title={t("matches.no")} variant="secondary" onPress={() => setMatch(m.match_id, "hylatty")} style={{ flex: 1 }} />
                                     </View>
                                 ) : (
                                     <View style={{ gap: 10 }}>
-                                        <PillButton small title={t("matches.contactFinder")} icon="message.fill" color={colors.lavender}
+                                        <Button small title={t("matches.contactFinder")} icon="message.fill" variant="secondary"
                                             onPress={() => router.push({ pathname: "/bike/[id]", params: { id: m.other_bike_id } })} />
-                                        <PillButton small title={t("dash.gotItBack")} icon="party.popper.fill" color={colors.mint} onPress={() => setBikeStatus(m.my_bike_id, "löytynyt")} />
+                                        <Button small title={t("dash.gotItBack")} icon="party.popper.fill" variant="soft" onPress={() => setBikeStatus(m.my_bike_id, "löytynyt")} />
                                     </View>
                                 )}
                             </>
@@ -136,15 +136,15 @@ function SignedIn() {
 
             <View style={{ gap: 10 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <T variant="title" style={{ fontSize: 26 }}>{t("dash.myBikes", { n: bikes.length })}</T>
-                    <Pressable onPress={() => router.push("/report/register")} hitSlop={10}><Icon name="plus.circle.fill" size={28} color={colors.raspberry} /></Pressable>
+                    <T variant="section">{t("dash.myBikes", { n: bikes.length })}</T>
+                    <Pressable onPress={() => router.push("/report/register")} hitSlop={10}><Icon name="plus.circle.fill" size={28} color={colors.accent} /></Pressable>
                 </View>
                 {bikes.length === 0 && <T variant="muted">{t("dash.noBikes")}</T>}
                 {bikes.map(b => (
                     <Card key={b.id} style={{ gap: 10 }}>
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
                             <View style={styles.matchThumb}>
-                                {b.image_url ? <Image source={{ uri: b.image_url }} style={StyleSheet.absoluteFill} contentFit="cover" /> : <Icon name="bicycle" size={28} color="#c9b8a6" />}
+                                {b.image_url ? <Image source={{ uri: b.image_url }} style={StyleSheet.absoluteFill} contentFit="cover" /> : <Icon name="bicycle" size={28} color={colors.faint} />}
                             </View>
                             <View style={{ flex: 1, gap: 4 }}>
                                 <StatusBadge status={b.status} />
@@ -152,9 +152,9 @@ function SignedIn() {
                                 <T variant="small">SN: {b.serial_number || "–"}</T>
                             </View>
                         </View>
-                        {b.status === "varastettu" && <PillButton small title={t("dash.gotItBack")} icon="party.popper.fill" color={colors.mint} onPress={() => setBikeStatus(b.id, "löytynyt")} />}
+                        {b.status === "varastettu" && <Button small title={t("dash.gotItBack")} icon="party.popper.fill" variant="soft" onPress={() => setBikeStatus(b.id, "löytynyt")} />}
                         {b.status === "rekisteröity" && (
-                            <PillButton small title={t("dash.stolenButton")} icon="exclamationmark.triangle.fill" color={colors.pink}
+                            <Button small title={t("dash.stolenButton")} icon="exclamationmark.triangle.fill" variant="soft"
                                 onPress={() => Alert.alert(t("dash.stolenButton"), t("dash.confirmStolen"), [
                                     { text: t("m.cancel"), style: "cancel" },
                                     { text: t("m.ok"), style: "destructive", onPress: () => setBikeStatus(b.id, "varastettu") }
@@ -165,22 +165,22 @@ function SignedIn() {
             </View>
 
             <View style={{ gap: 10 }}>
-                <T variant="title" style={{ fontSize: 26 }}>{t("messages.title", { n: messages.length })}</T>
+                <T variant="section">{t("messages.title", { n: messages.length })}</T>
                 {messages.length === 0 && <T variant="muted">{t("messages.none")}</T>}
                 {messages.map(m => (
-                    <Card key={m.id} style={{ gap: 8, borderLeftWidth: 5, borderLeftColor: m.read_at ? colors.border : colors.red }}>
+                    <Card key={m.id} style={{ gap: 8, borderLeftWidth: 5, borderLeftColor: m.read_at ? colors.border : colors.accent }}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                            <T style={{ fontWeight: "700" }}>{m.sender_name}</T>
+                            <T style={{ fontFamily: fonts.bold }}>{m.sender_name}</T>
                             <T variant="small">{bikeTitle(m.bikes ?? {}, "")}</T>
                         </View>
                         <T>{m.body}</T>
                         <View style={{ flexDirection: "row", gap: 16 }}>
                             <Pressable onPress={() => Linking.openURL(`mailto:${m.sender_email}`)} style={styles.contactLink}>
-                                <Icon name="envelope.fill" size={14} color={colors.raspberry} /><T style={{ color: colors.raspberry, fontWeight: "600" }}>{m.sender_email}</T>
+                                <Icon name="envelope.fill" size={14} color={colors.accent} /><T style={{ color: colors.accent, fontFamily: fonts.semibold }}>{m.sender_email}</T>
                             </Pressable>
                             {m.sender_phone && (
                                 <Pressable onPress={() => Linking.openURL(`tel:${m.sender_phone!.replace(/\s+/g, "")}`)} style={styles.contactLink}>
-                                    <Icon name="phone.fill" size={14} color={colors.raspberry} /><T style={{ color: colors.raspberry, fontWeight: "600" }}>{m.sender_phone}</T>
+                                    <Icon name="phone.fill" size={14} color={colors.accent} /><T style={{ color: colors.accent, fontFamily: fonts.semibold }}>{m.sender_phone}</T>
                                 </Pressable>
                             )}
                         </View>
@@ -208,8 +208,8 @@ function AccountActions() {
     ]);
     return (
         <View style={{ gap: 12 }}>
-            <PillButton title={t("dash.logout")} icon="rectangle.portrait.and.arrow.right" color={colors.surface} onPress={() => supabase.auth.signOut()} />
-            <Pressable onPress={deleteAccount} hitSlop={8}><T style={{ color: colors.red, textAlign: "center", fontWeight: "600" }}>{t("m.deleteAccount")}</T></Pressable>
+            <Button title={t("dash.logout")} icon="rectangle.portrait.and.arrow.right" variant="secondary" onPress={() => supabase.auth.signOut()} />
+            <Pressable onPress={deleteAccount} hitSlop={8}><T style={{ color: colors.accent, textAlign: "center", fontFamily: fonts.semibold }}>{t("m.deleteAccount")}</T></Pressable>
         </View>
     );
 }
@@ -248,8 +248,8 @@ function Settings() {
 }
 
 const styles = StyleSheet.create({
-    matchThumb: { width: 64, height: 64, borderRadius: radius.md, overflow: "hidden", backgroundColor: "#f3ece0", alignItems: "center", justifyContent: "center" },
-    reason: { backgroundColor: colors.shell, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+    matchThumb: { width: 64, height: 64, borderRadius: radius.md, overflow: "hidden", backgroundColor: colors.field, alignItems: "center", justifyContent: "center" },
+    reason: { backgroundColor: colors.field, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
     linkRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 14 },
     contactLink: { flexDirection: "row", alignItems: "center", gap: 6 }
 });

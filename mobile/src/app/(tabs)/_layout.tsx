@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n";
 export default function TabLayout() {
     const { t } = useI18n();
     return (
-        <NativeTabs tintColor={colors.raspberry} iconColor={{ default: colors.muted, selected: colors.raspberry }}>
+        <NativeTabs tintColor={colors.accent} iconColor={{ default: colors.muted, selected: colors.accent }}>
             <NativeTabs.Trigger name="index">
                 <NativeTabs.Trigger.Label>{t("tab.search")}</NativeTabs.Trigger.Label>
                 <NativeTabs.Trigger.Icon sf={{ default: "magnifyingglass", selected: "magnifyingglass" }} md="search" />

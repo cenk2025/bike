@@ -3,8 +3,8 @@ import { View } from "react-native";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { colors } from "@/lib/theme";
-import { ErrorBox, Field, Icon, PillButton, T } from "./ui";
+import { colors, fonts } from "@/lib/theme";
+import { ErrorBox, Field, Icon, Button, T } from "./ui";
 
 /** Sends a message to the bike's owner or finder through BikeBack (bike_messages). */
 export default function ContactForm({ bikeId, recipient }: { bikeId: string | number; recipient: "omistaja" | "löytäjä" }) {
@@ -39,7 +39,7 @@ export default function ContactForm({ bikeId, recipient }: { bikeId: string | nu
         return (
             <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
                 <Icon name="checkmark.circle.fill" color="#1f7a44" />
-                <T style={{ color: "#1f7a44", flex: 1, fontWeight: "600" }}>
+                <T style={{ color: "#1f7a44", flex: 1, fontFamily: fonts.semibold }}>
                     {t(recipient === "omistaja" ? "contact.sentOwner" : "contact.sentFinder")}
                 </T>
             </View>
@@ -60,7 +60,7 @@ export default function ContactForm({ bikeId, recipient }: { bikeId: string | nu
                 <Icon name="lock.shield" size={16} color={colors.muted} />
                 <T variant="small" style={{ flex: 1 }}>{t("contact.privacy")}</T>
             </View>
-            <PillButton title={t("contact.send")} icon="paperplane.fill" onPress={send} loading={sending} disabled={!valid} />
+            <Button title={t("contact.send")} icon="paperplane.fill" onPress={send} loading={sending} disabled={!valid} />
         </View>
     );
 }

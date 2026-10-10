@@ -3,8 +3,8 @@ import { router, type Href } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
-import { colors, radius } from "@/lib/theme";
-import { Icon, T } from "@/components/ui";
+import { colors, radius, shadow } from "@/lib/theme";
+import { Icon, IconTile, T } from "@/components/ui";
 
 /** Entry point for all reports. Stolen/register need an account; found does not. */
 export default function ReportScreen() {
@@ -21,12 +21,12 @@ export default function ReportScreen() {
     };
 
     return (
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: 40 }} contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: colors.cream }}>
-            <T variant="hero" style={{ fontSize: 44, lineHeight: 50, marginTop: 28 }}>{t("tab.report")}</T>
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 14, paddingBottom: 40 }} contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: colors.bg }}>
+            <T variant="hero" style={{ marginTop: 28 }}>{t("tab.report")}</T>
             <T variant="muted">{t("m.reportTitle")}</T>
 
             <Option
-                color={colors.pink}
+                color={colors.accent}
                 icon="exclamationmark.triangle.fill"
                 title={t("theft.modeStolen")}
                 text={t("theft.modeStolenText")}
@@ -34,7 +34,7 @@ export default function ReportScreen() {
                 onPress={() => go("/report/stolen", true)}
             />
             <Option
-                color={colors.lavender}
+                color={colors.purple}
                 icon="checkmark.shield.fill"
                 title={t("theft.modeRegister")}
                 text={t("theft.modeRegisterText")}
@@ -42,7 +42,7 @@ export default function ReportScreen() {
                 onPress={() => go("/report/register", true)}
             />
             <Option
-                color={colors.mint}
+                color={colors.teal}
                 icon="hand.raised.fill"
                 title={t("m.found")}
                 text={t("m.reportFoundText")}
@@ -56,29 +56,24 @@ function Option({ color, icon, title, text, badge, onPress }: {
     color: string; icon: Parameters<typeof Icon>[0]["name"]; title: string; text: string; badge?: string; onPress: () => void;
 }) {
     return (
-        <Pressable onPress={onPress} accessibilityRole="button" style={({ pressed }) => [{ paddingBottom: 6 }, pressed && { transform: [{ translateY: 3 }] }]}>
-            <View style={styles.shadow} />
-            <View style={[styles.option, { backgroundColor: color }]}>
-                <View style={styles.icon}><Icon name={icon} size={26} /></View>
-                <View style={{ flex: 1, gap: 4 }}>
-                    <T variant="heading" style={{ fontSize: 23, lineHeight: 27 }}>{title}</T>
-                    <T style={{ color: colors.maroon, opacity: 0.8 }}>{text}</T>
-                    {badge && (
-                        <View style={styles.badge}>
-                            <Icon name="lock.fill" size={11} />
-                            <T style={{ fontSize: 12, fontWeight: "700" }}>{badge}</T>
-                        </View>
-                    )}
-                </View>
-                <Icon name="chevron.right" size={16} />
+        <Pressable onPress={onPress} accessibilityRole="button" style={({ pressed }) => [styles.option, pressed && { transform: [{ scale: 0.98 }] }]}>
+            <IconTile name={icon} color={color} size={52} />
+            <View style={{ flex: 1, gap: 3 }}>
+                <T variant="heading">{title}</T>
+                <T variant="small" style={{ fontSize: 14, lineHeight: 19 }}>{text}</T>
+                {badge && (
+                    <View style={styles.badge}>
+                        <Icon name="lock.fill" size={10} color={colors.muted} />
+                        <T variant="small" style={{ fontSize: 12, lineHeight: 16 }}>{badge}</T>
+                    </View>
+                )}
             </View>
+            <Icon name="chevron.right" size={14} color={colors.faint} />
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
-    shadow: { position: "absolute", left: 0, right: 0, top: 6, bottom: 0, borderRadius: radius.lg, backgroundColor: colors.maroon },
-    option: { flexDirection: "row", alignItems: "center", gap: 14, padding: 18, borderRadius: radius.lg, borderWidth: 2, borderColor: colors.maroon },
-    icon: { width: 52, height: 52, borderRadius: 26, backgroundColor: "rgba(255,255,255,0.65)", alignItems: "center", justifyContent: "center" },
-    badge: { flexDirection: "row", alignItems: "center", gap: 4, alignSelf: "flex-start", backgroundColor: "rgba(255,255,255,0.6)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, marginTop: 4 }
+    option: { flexDirection: "row", alignItems: "center", gap: 14, padding: 16, borderRadius: radius.lg, backgroundColor: colors.surface, ...shadow },
+    badge: { flexDirection: "row", alignItems: "center", gap: 4, alignSelf: "flex-start", backgroundColor: colors.field, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, marginTop: 4 }
 });
